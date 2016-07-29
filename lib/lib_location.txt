@@ -1,0 +1,6 @@
+http://fizzed.com/oss/rxtx-for-java
+Required files in this folder:
+
+  RXTXcomm.jar
+  rxtxParallel.dll
+  rxtxSerial.dll
