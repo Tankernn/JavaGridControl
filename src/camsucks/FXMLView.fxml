@@ -16,22 +16,22 @@
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="164.0" prefWidth="335.0">
                            <children>
-                              <TextField fx:id="targetRPM" layoutX="161.0" layoutY="4.0" prefHeight="25.0" prefWidth="66.0" />
                               <Label layoutX="8.0" layoutY="8.0" text="Target Fan Percentage" />
-                              <TextField fx:id="targetCPUTemp" layoutX="161.0" layoutY="53.0" prefHeight="25.0" prefWidth="65.0" />
-                              <Label layoutX="8.0" layoutY="57.0" text="Target Temperature" />
-                              <TextField fx:id="maxCPUTemp" layoutX="161.0" layoutY="103.0" prefHeight="25.0" prefWidth="65.0" />
-                              <Label layoutX="8.0" layoutY="107.0" text="Preferred Maximum" />
-                              <Label layoutX="8.0" layoutY="158.0" text="COM Port" />
-                              <ChoiceBox fx:id="portMap" layoutX="161.0" layoutY="153.0" prefHeight="25.0" prefWidth="65.0" />
-                              <TextField fx:id="maxGPUTemp" layoutX="161.0" layoutY="128.0" prefHeight="25.0" prefWidth="65.0" />
-                              <TextField fx:id="targetGPUTemp" layoutX="161.0" layoutY="78.0" prefHeight="25.0" prefWidth="65.0" />
-                              <Label layoutX="127.0" layoutY="57.0" text="CPU" />
-                              <Label layoutX="127.0" layoutY="107.0" text="CPU" />
-                              <Label layoutX="127.0" layoutY="82.0" text="GPU" />
-                              <Label layoutX="127.0" layoutY="132.0" text="GPU" />
-                              <TextField fx:id="minRPM" layoutX="161.0" layoutY="28.0" prefHeight="25.0" prefWidth="65.0" />
                               <Label layoutX="8.0" layoutY="29.0" text="Minimum Fan Percentage" />
+                              <Label layoutX="8.0" layoutY="57.0" text="Target Temperature" />
+                              <Label layoutX="127.0" layoutY="57.0" text="CPU" />
+                              <Label layoutX="127.0" layoutY="82.0" text="GPU" />
+                              <Label layoutX="8.0" layoutY="107.0" text="Preferred Maximum" />
+                              <Label layoutX="127.0" layoutY="107.0" text="CPU" />
+                              <Label layoutX="127.0" layoutY="132.0" text="GPU" />
+                              <Label layoutX="8.0" layoutY="158.0" text="COM Port" />
+                              <TextField fx:id="targetRPM" layoutX="161.0" layoutY="4.0" prefHeight="25.0" prefWidth="66.0" />
+                              <TextField fx:id="minRPM" layoutX="161.0" layoutY="28.0" prefHeight="25.0" prefWidth="65.0" />
+                              <TextField fx:id="targetCPUTemp" layoutX="161.0" layoutY="53.0" prefHeight="25.0" prefWidth="65.0" />
+                              <TextField fx:id="targetGPUTemp" layoutX="161.0" layoutY="78.0" prefHeight="25.0" prefWidth="65.0" />
+                              <TextField fx:id="maxCPUTemp" layoutX="161.0" layoutY="103.0" prefHeight="25.0" prefWidth="65.0" />
+                              <TextField fx:id="maxGPUTemp" layoutX="161.0" layoutY="128.0" prefHeight="25.0" prefWidth="65.0" />
+                              <ChoiceBox fx:id="portMap" layoutX="161.0" layoutY="153.0" prefHeight="25.0" prefWidth="65.0" />
                            </children>
                         </AnchorPane>
                   </content>
