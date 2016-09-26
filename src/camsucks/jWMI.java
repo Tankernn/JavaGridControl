@@ -271,25 +271,6 @@ public class jWMI {
             e.printStackTrace();
         }
     }
-
-    /**
-     *
-     * @param argv
-     */
-    public static void main(String[] argv) {
-        try {
-            if (argv.length == 0) {
-                executeDemoQueries();
-            } else if (argv.length == 2) {
-                System.out.println(getWMIValue(argv[0], argv[1]));
-            } else {
-                System.out.println("Usage: jWMI <WmiQuery> <desiredFields>");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
 //WMI class definitions below here: 
 
