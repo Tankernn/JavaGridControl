@@ -72,6 +72,9 @@ public class GRID {
 
         if (communicator.getConnected() == true) {
            communicator.initIOStream();
+           System.out.println(communicator.getBuffer());
+          
+           
         }
         
     }
