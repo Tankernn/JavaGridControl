@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package camsucks;
+package camsucks.model;
+
+import java.util.Arrays;
 
 
 /**
@@ -36,7 +38,9 @@ public class Sensor {
         
         temperatureSensorList = jWMI.getWMISensorList("Temperature").split(", ");
         loadSensorList = jWMI.getWMISensorList("Load").split(", ");
-        
+        //System.out.println(Arrays.toString(temperatureSensorList));
+        //System.out.println(Arrays.toString(loadSensorList));
+
         //Init for cpuCoreNumber
         cpuCoreNumber = 0;
         for (String temperatureSensorList1 : loadSensorList) {

@@ -1,4 +1,4 @@
-package camsucks;
+package camsucks.model;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -183,7 +183,7 @@ public class jWMI {
         String tmpFileName = tmpDirName + File.separator + "jwmi.vbs";
         writeStrToFile(tmpFileName, vbScript);
         String output = execute(new String[]{"cmd.exe", "/C", "cscript.exe", tmpFileName});
-        new File(tmpFileName).delete();
+        //new File(tmpFileName).delete();
 
         return output.trim();
     }
@@ -202,7 +202,7 @@ public class jWMI {
         String tmpFileName = tmpDirName + File.separator + "jwmi.vbs";
         writeStrToFile(tmpFileName, vbScript);
         String output = execute(new String[]{"cmd.exe", "/C", "cscript.exe", tmpFileName});
-        new File(tmpFileName).delete();
+        //new File(tmpFileName).delete();
 
         return output.trim();
     }
@@ -222,7 +222,7 @@ public class jWMI {
         String tmpFileName = tmpDirName + File.separator + "jwmi.vbs";
         writeStrToFile(tmpFileName, vbScript);
         String output = execute(new String[]{"cmd.exe", "/C", "cscript.exe", tmpFileName});
-        new File(tmpFileName).delete();
+        //new File(tmpFileName).delete();
 
         return output.trim();
     }

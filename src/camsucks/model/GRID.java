@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package camsucks;
+package camsucks.model;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -72,7 +73,7 @@ public class GRID {
 
         if (communicator.getConnected() == true) {
            communicator.initIOStream();
-           System.out.println(communicator.getBuffer());
+           //System.out.println(Arrays.toString(communicator.getBuffer()));
           
            
         }
