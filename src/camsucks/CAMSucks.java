@@ -5,7 +5,7 @@
  */
 package camsucks;
 
-import java.awt.Toolkit;
+import camsucks.model.ComputerModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -49,21 +49,19 @@ public class CAMSucks extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         
-        
         // Model
         ComputerModel model = new ComputerModel("COM3");
         
         // View
-
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("FXMLView.fxml"));
         Parent root = loader.load();
         
-        
         // Controller
         FXMLViewController controller = loader.getController();
         controller.setModel(model);
- 
+   
+        //Scene
         Scene scene = new Scene(root);
         setUserAgentStylesheet(STYLESHEET_CASPIAN);
         stage.setResizable(false);
@@ -75,8 +73,7 @@ public class CAMSucks extends Application {
         stage.setOnCloseRequest(event -> {
             model.getGrid().disconnect();
             System.exit(0);
-        });
-        
+        });     
     }
 
     /**
@@ -85,7 +82,6 @@ public class CAMSucks extends Application {
      */
     public static void main(String[] args)  {
         launch(args);
-
     }
 
 }
