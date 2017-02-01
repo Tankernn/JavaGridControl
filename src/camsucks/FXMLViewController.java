@@ -353,7 +353,7 @@ public class FXMLViewController implements Initializable, Runnable {
                 model.compute();
             }
 
-            model.getGrid().setFanSpeed(model.getPercentageToSend());
+            model.updateFanSpeed();
 
             try {
                 while (System.currentTimeMillis() - milis <= 1000) {

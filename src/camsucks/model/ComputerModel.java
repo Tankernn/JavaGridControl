@@ -154,6 +154,10 @@ public class ComputerModel {
         }
 
     }
+    
+    public void updateFanSpeed(){
+        getGrid().setFanSpeed(getPercentageToSend());
+    }
 
     /**
      * A getter for the Sensor Object to make the methods of the object
