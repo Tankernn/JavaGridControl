@@ -1,4 +1,4 @@
-package camsucks.model;
+package eu.tankernn.grid.model;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,4 +1,4 @@
-package camsucks.model;
+package eu.tankernn.grid.model;
 
 import static java.lang.Thread.sleep;
 
@@ -9,18 +9,6 @@ import java.util.HashMap;
 
 import com.fazecast.jSerialComm.SerialPort;
 
-/**
- * This class communicates with a serial com device
- * 
- * @author Henry Poon @ https://blog.henrypoon.com/ Changes by Roel: Removed all
- *         references to the GUI class from Henry Poon's original project.
- *         Changed the event based serial read to a synchronised read after each
- *         write. Added a Buffer for the serial read so that the read data can
- *         easily be accessed by other classes Completely rewritten the
- *         writeData method so that it works with the GRID+ controller Added
- *         some getters and setters for the buffer added a getter for the
- *         portMap so that the controller and view can access it
- */
 public class Communicator {
 
 	// for containing the ports that will be found
@@ -34,24 +22,12 @@ public class Communicator {
 	private InputStream input = null;
 	private OutputStream output = null;
 
-	// the timeout value for connecting with the port
-	final static int TIMEOUT = 2000;
-
-	// some ascii values for for certain things
-	final static int SPACE_ASCII = 32;
-	final static int DASH_ASCII = 45;
-	final static int NEW_LINE_ASCII = 10;
-
 	// Buffer
 	private int leng;
 	private byte[] buffer;
 
 	// a string for recording what goes on in the program
 	String logText = "";
-
-	// search for all the serial ports
-	// pre: none
-	// post: adds all the found ports to a combo box on the GUI
 
 	/**
 	 *
@@ -75,10 +51,10 @@ public class Communicator {
 	/**
 	 * This method opens the COM port with port parameters: Baudrate: 4800;
 	 * databits: 8; Stopbit: 1; parity: none;
-	 * @param selectedPort 
+	 * 
+	 * @param selectedPort
 	 */
 	public void connect(String selectedPort) {
-
 		try {
 			serialPort = portMap.get(selectedPort);
 
@@ -90,22 +66,12 @@ public class Communicator {
 			initIOStream();
 
 			// logging
-			logText = selectedPort + " opened successfully.";
-			System.out.println(logText);
-
-			// CODE ON SETTING BAUD RATE ETC OMITTED
-			// XBEE PAIR ASSUMED TO HAVE SAME SETTINGS ALREADY
-
-			// } catch (PortInUseException e) {
-			// logText = selectedPort + " is in use. (" + e.toString() + ")";
-			//
-			// System.out.println(logText);
+			System.out.println(selectedPort + " opened successfully.");
 		} catch (Exception e) {
 			logText = "Failed to open " + selectedPort + "(" + e.toString() + ")";
 			System.out.println(logText);
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -126,12 +92,12 @@ public class Communicator {
 
 	private void knock() {
 		for (int i = 0; i < 8; i++) {
-			writeData(new byte[]{(byte) 0xc0});
+			ping();
 		}
 	}
 
 	private boolean ping() {
-		writeData(new byte[]{(byte) 0xc0});
+		writeData(new byte[] { (byte) 0xc0 });
 		return buffer[0] == 0x21;
 	}
 
@@ -139,13 +105,11 @@ public class Communicator {
 	 * This method disconnects the serial communication by first closing the
 	 * serialPort and then closing the IOStreams
 	 * 
-	 * 
 	 */
 	public void disconnect() {
 		if (!serialPort.isOpen())
 			return;
 		try {
-			// serialPort.removeEventListener();
 			input.close();
 			output.close();
 			serialPort.closePort();
@@ -165,7 +129,8 @@ public class Communicator {
 	 * after the data is read the method waits 50 msec to make sure a new
 	 * command doesn't follow up to quickly This promotes stability in the
 	 * program.
-	 * @return 
+	 * 
+	 * @return
 	 * 
 	 * 
 	 */
@@ -245,7 +210,7 @@ public class Communicator {
 			return 0;
 		}
 	}
-	
+
 	/**
 	 * @return the portMap
 	 */

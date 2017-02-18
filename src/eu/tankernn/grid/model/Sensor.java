@@ -1,4 +1,6 @@
-package camsucks.model;
+package eu.tankernn.grid.model;
+
+import java.io.IOException;
 
 /**
  *
@@ -23,11 +25,9 @@ public class Sensor {
      * The constructor for this class
      * At the start the lists of sensors are made with the help of the jWMI class
      * Then the number of cores of the system is calculated
-     * 
-     * @throws Exception when the WMI value can't be obtained
+     * @throws IOException when the WMI value can't be obtained
      */
-    public Sensor() throws Exception {
-        
+    public Sensor() throws IOException {
         temperatureSensorList = jWMI.getWMISensorList("Temperature").split(", ");
         loadSensorList = jWMI.getWMISensorList("Load").split(", ");
         //System.out.println(Arrays.toString(temperatureSensorList));
@@ -45,7 +45,6 @@ public class Sensor {
                 }
             }
         }
-
     }
 
     /**
