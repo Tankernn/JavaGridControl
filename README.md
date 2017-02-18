@@ -1,2 +1,2 @@
-# CamSucks
-An alternative control software for the NZXT GRID+ 
+# JavaGridControl
+Open-Source control software for the NZXT Grid+ and Grid+v2.
