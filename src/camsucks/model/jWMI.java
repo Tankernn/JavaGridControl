@@ -1,11 +1,12 @@
 package camsucks.model;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+
+import javax.naming.InvalidNameException;
 
 /**
  * File: jWMI.java Date: 12/21/09 Author: Shaun Henry Copyright Henry Ranch LLC
@@ -141,14 +142,16 @@ public class jWMI {
      *
      * @param envVarName the name of the env var to get
      * @return the value of the env var
+     * @throws IOException 
+     * @throws InvalidNameException 
      * @throws Exception if the given envVarName does not exist
      *
      */
-    private static String getEnvVar(String envVarName) throws Exception {
+    private static String getEnvVar(String envVarName) throws IOException, InvalidNameException {
         String varName = "%" + envVarName + "%";
         String envVarValue = execute(new String[]{"cmd.exe", "/C", "echo " + varName});
         if (envVarValue.equals(varName)) {
-            throw new Exception("Environment variable '" + envVarName + "' does not exist!");
+            throw new InvalidNameException("Environment variable '" + envVarName + "' does not exist!");
         }
         return envVarValue;
     }
@@ -158,10 +161,11 @@ public class jWMI {
      *
      * @param filename the file to write the data to
      * @param data a String ofdata to be written into the file
+     * @throws IOException 
      * @throws Exception if the output file cannot be written
      *
      */
-    private static void writeStrToFile(String filename, String data) throws Exception {
+    private static void writeStrToFile(String filename, String data) throws IOException {
         FileWriter output = new FileWriter(filename);
         output.write(data);
         output.flush();
@@ -174,15 +178,14 @@ public class jWMI {
      *
      * @param SensorType The type of sensor to get a list of
      * @return a comma separated list of the sensors
+     * @throws IOException 
      * @throws Exception if there is a problem obtaining the value
      *
      */
-    public static String getWMISensorList(String SensorType) throws Exception {
+    public static String getWMISensorList(String SensorType) throws IOException {
         String vbScript = getVBScriptList(SensorType);
-        String tmpDirName = getEnvVar("TEMP").trim();
-        String tmpFileName = tmpDirName + File.separator + "jwmi.vbs";
-        writeStrToFile(tmpFileName, vbScript);
-        String output = execute(new String[]{"cmd.exe", "/C", "cscript.exe", tmpFileName});
+        
+        String output = execute(new String[]{"cmd.exe", "/C", "cscript.exe", writeToTempFile(vbScript)});
         //new File(tmpFileName).delete();
 
         return output.trim();
@@ -193,15 +196,13 @@ public class jWMI {
      * @param SensorType the type of the sensor
      * @param name the name of the sensor
      * @return the value of the sensor
+     * @throws IOException 
      * @throws Exception if there is a problem obtaining the value
      *
      */
-    public static String getWMIValue(String SensorType, String name) throws Exception {
+    public static String getWMIValue(String SensorType, String name) throws IOException {
         String vbScript = getVBScriptValue(SensorType, name);
-        String tmpDirName = getEnvVar("TEMP").trim();
-        String tmpFileName = tmpDirName + File.separator + "jwmi.vbs";
-        writeStrToFile(tmpFileName, vbScript);
-        String output = execute(new String[]{"cmd.exe", "/C", "cscript.exe", tmpFileName});
+        String output = execute(new String[]{"cmd.exe", "/C", "cscript.exe", writeToTempFile(vbScript)});
         //new File(tmpFileName).delete();
 
         return output.trim();
@@ -213,15 +214,13 @@ public class jWMI {
      * @param SensorType the type of the sensor
      * @param name the name of the sensor
      * @return the value of the sensor
+     * @throws IOException 
      * @throws Exception if there is a problem obtaining the value
      *
      */
-    public static String getWMIValue(String SensorType, String name, String value) throws Exception {
+    public static String getWMIValue(String SensorType, String name, String value) throws IOException {
         String vbScript = getVBScriptValue(SensorType, name, value);
-        String tmpDirName = getEnvVar("TEMP").trim();
-        String tmpFileName = tmpDirName + File.separator + "jwmi.vbs";
-        writeStrToFile(tmpFileName, vbScript);
-        String output = execute(new String[]{"cmd.exe", "/C", "cscript.exe", tmpFileName});
+        String output = execute(new String[]{"cmd.exe", "/C", "cscript.exe", writeToTempFile(vbScript)});
         //new File(tmpFileName).delete();
 
         return output.trim();
@@ -232,10 +231,11 @@ public class jWMI {
      *
      * @param cmdArray an array of the command line params
      * @return the output as gathered from stdout of the process
+     * @throws IOException 
      * @throws an Exception upon encountering a problem
      *
      */
-    private static String execute(String[] cmdArray) throws Exception {
+    private static String execute(String[] cmdArray) throws IOException {
         Process process = Runtime.getRuntime().exec(cmdArray);
         BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String output = "";
@@ -249,6 +249,18 @@ public class jWMI {
         process.destroy();
         process = null;
         return output.trim();
+    }
+    
+    private static String writeToTempFile(String data) throws IOException {
+    	String tmpDirName;
+		try {
+			tmpDirName = getEnvVar("TEMP").trim();
+		} catch (InvalidNameException | IOException e) {
+			tmpDirName = "/temp";
+		}
+        String tmpFileName = tmpDirName + File.separator + "jwmi.vbs";
+        writeStrToFile(tmpFileName, data);
+        return tmpFileName;
     }
 
     /**
@@ -270,6 +282,10 @@ public class jWMI {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public static void main(String[] args) {
+    	executeDemoQueries();
     }
 }
 //WMI class definitions below here: 

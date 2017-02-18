@@ -1,12 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package camsucks.model;
-
-import java.util.Arrays;
-
 
 /**
  *
@@ -67,10 +59,11 @@ public class Sensor {
     
     /**
      *  This method polls the value of the CPU Load sensor
+     * @throws NumberFormatException 
      * @throws Exception
      */
-    public void pollCPUMax() throws Exception {
-        cpuMax = Double.parseDouble(jWMI.getWMIValue("Temperature", "CPU Core", "Max"));
+    public void pollCPUMax() throws NumberFormatException, Exception {
+        cpuMax = Double.parseDouble(jWMI.getWMIValue("Temperature", "CPU Package", "Max"));
 
     }
     
@@ -97,7 +90,7 @@ public class Sensor {
      * @throws Exception
      */
     public void pollCPUTemp() throws Exception {
-        cpuPackageTemp = Double.parseDouble(jWMI.getWMIValue("Temperature", "CPU Core"));
+        cpuPackageTemp = Double.parseDouble(jWMI.getWMIValue("Temperature", "CPU Package"));
     }
 
     /**
