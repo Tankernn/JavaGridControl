@@ -28,7 +28,7 @@ public class GRID {
 	 * at the selected port
 	 */
 	public GRID() {
-		fans = IntStream.range(0, 5).mapToObj(i -> new Fan(this, i)).toArray(Fan[]::new);
+		fans = IntStream.range(0, 6).mapToObj(i -> new Fan(this, i)).toArray(Fan[]::new);
 
 		communicator = new Communicator();
 		communicator.searchForPorts();

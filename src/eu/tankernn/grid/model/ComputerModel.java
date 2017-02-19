@@ -45,8 +45,6 @@ public class ComputerModel {
 	 *
 	 */
 	public void poll() {
-		System.out.println("Polling...");
-
 		grid.pollFans();
 
 		try {

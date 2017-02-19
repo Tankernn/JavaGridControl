@@ -1,9 +1,17 @@
 package eu.tankernn.grid;
 
+import java.util.Arrays;
+
 public class FanSpeedProfile {
 	public static final int MAX_TEMP = 80, MIN_TEMP = 30, STEPS = 5;
 	
-	private int[] percentages = new int[STEPS];
+	public final String name;
+	public final int[] percentages;
+	
+	public FanSpeedProfile(String name, int[] percentages) {
+		this.name = name;
+		this.percentages = percentages;
+	}
 	
 	public int getSpeedPercentage(double temp) {
 		int stepSize = (MAX_TEMP - MIN_TEMP) / STEPS;
@@ -18,5 +26,10 @@ public class FanSpeedProfile {
 		}
 		
 		return 100;
+	}
+	
+	@Override
+	public String toString() {
+		return name + ": " + Arrays.toString(percentages);
 	}
 }

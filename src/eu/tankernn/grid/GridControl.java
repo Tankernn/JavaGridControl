@@ -5,6 +5,7 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
+import eu.tankernn.grid.frame.GridControlPanel;
 import eu.tankernn.grid.model.ComputerModel;
 
 public class GridControl extends JFrame implements WindowListener {
@@ -14,12 +15,11 @@ public class GridControl extends JFrame implements WindowListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	GridControlPanel panel = new GridControlPanel();
 	ComputerModel model = new ComputerModel();
+	GridControlPanel panel = new GridControlPanel(model);
 
 	public GridControl() {
 		this.add(panel);
-		panel.setModel(model);
 		setResizable(true);
 		setTitle("JavaGridControl");
 		pack();

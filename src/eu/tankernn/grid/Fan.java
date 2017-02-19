@@ -7,7 +7,7 @@ public class Fan {
 	private int rpm, index;
 	private GRID grid;
 	private FanSpeedProfile profile;
-	private int speed;
+	private int speed = 100;
 
 	public Fan(GRID grid, int index) {
 		this.grid = grid;
@@ -128,7 +128,10 @@ public class Fan {
 			grid.getCommunicator().writeData(command);
 
 		}
-
+	}
+	
+	public void setProfile(FanSpeedProfile profile) {
+		this.profile = profile;
 	}
 
 	/**

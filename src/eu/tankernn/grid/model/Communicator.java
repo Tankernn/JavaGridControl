@@ -107,7 +107,7 @@ public class Communicator {
 	 * 
 	 */
 	public void disconnect() {
-		if (!serialPort.isOpen())
+		if (serialPort == null || !serialPort.isOpen())
 			return;
 		try {
 			input.close();
@@ -219,7 +219,7 @@ public class Communicator {
 	}
 
 	public boolean isConnected() {
-		return serialPort.isOpen();
+		return serialPort != null && serialPort.isOpen();
 	}
 
 }

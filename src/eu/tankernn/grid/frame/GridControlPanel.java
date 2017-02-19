@@ -1,17 +1,19 @@
-package eu.tankernn.grid;
+package eu.tankernn.grid.frame;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
+import java.util.stream.IntStream;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.JTextField;
 
+import eu.tankernn.grid.FanSpeedProfile;
 import eu.tankernn.grid.model.ComputerModel;
 
 public class GridControlPanel extends JPanel implements Runnable {
@@ -26,12 +28,11 @@ public class GridControlPanel extends JPanel implements Runnable {
 	private ComputerModel model;
 
 	private FanPanel[] fanPanels;
+	private JPanel gridPanel = new JPanel();
 
 	private JTextField minRPM = new JTextField();
 
 	private JComboBox<String> portMap = new JComboBox<>();
-
-	private JSlider manualSlider = new JSlider();
 
 	private JLabel CPULabel = new JLabel("CPU preferred");
 
@@ -42,6 +43,8 @@ public class GridControlPanel extends JPanel implements Runnable {
 	private JLabel GPULabelMax = new JLabel("GPU max");
 
 	private JLabel PowerLabel = new JLabel("Power");
+
+	private FanSpeedProfile[] profiles;
 
 	private void setMinRPM(ActionEvent event) {
 		getModel().setMinRPM(Integer.parseInt(minRPM.getText()));
@@ -55,34 +58,36 @@ public class GridControlPanel extends JPanel implements Runnable {
 		getModel().setGrid(selectedPort);
 	}
 
-	public GridControlPanel() {
-		this.setLayout(new GridLayout(3, 2));
+	public GridControlPanel(ComputerModel model) {
+		setModel(model);
+		this.setLayout(new BorderLayout());
 
+		profiles = generateProfiles();
+		fanPanels = model.getGrid().fanStream().map(f -> new FanPanel(f, profiles)).toArray(FanPanel[]::new);
+
+		gridPanel.setLayout(new GridLayout(3, 2));
 		for (FanPanel p : fanPanels)
-			this.add(p);
+			gridPanel.add(p);
+
+		this.add(gridPanel, BorderLayout.CENTER);
 
 		minRPM.addActionListener(this::setMinRPM);
 
-		manualSlider.setMaximum(100);
-
-		manualSlider.setMinimum(0);
-
-		// manualSlider.addChangeListener(new ChangeListener() {
-		//
-		// @Override
-		// public void stateChanged(ChangeEvent e) {
-		// manualSpeed(e);
-		// }
-		// });
-
 		portMap.addItemListener(new ItemListener() {
-
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				setPort(e);
 			}
 		});
+		this.add(portMap, BorderLayout.NORTH);
 
+		t = new Thread(this);
+		t.setDaemon(true);
+		t.start();
+	}
+
+	private FanSpeedProfile[] generateProfiles() {
+		return IntStream.range(30 / 5, 100 / 5).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i })).toArray(FanSpeedProfile[]::new);
 	}
 
 	/**
@@ -92,19 +97,15 @@ public class GridControlPanel extends JPanel implements Runnable {
 	 *
 	 * @param model the model to set
 	 */
-	public void setModel(ComputerModel model) {
+	private void setModel(ComputerModel model) {
 		this.model = model;
 
 		portMap.removeAllItems();
 		for (String key : model.getGrid().getCommunicator().getPortMap().keySet()) {
 			portMap.addItem(key);
 		}
-
-		updateProperties();
-
-		t = new Thread(this);
-		t.setDaemon(true);
-		t.start();
+		
+		setPort(null);
 	}
 
 	/**
@@ -120,17 +121,18 @@ public class GridControlPanel extends JPanel implements Runnable {
 		CPULabelMax.setText(df.format(getModel().getSensor().getCpuMax()) + " °C Max");
 		GPULabel.setText(df.format(getModel().getSensor().getGPUTemp()) + " °C");
 		GPULabelMax.setText(df.format(getModel().getSensor().getGpuMax()) + " °C Max");
+
+		for (FanPanel p : fanPanels)
+			p.update();
 	}
 
 	@Override
 	public void run() {
 		while (!t.isInterrupted()) {
 			model.poll();
+			model.compute();
 
 			updateProperties();
-
-			getModel().compute();
-
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException ex) {
