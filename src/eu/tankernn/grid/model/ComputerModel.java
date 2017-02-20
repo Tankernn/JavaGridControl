@@ -1,7 +1,13 @@
 package eu.tankernn.grid.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import eu.tankernn.grid.FanSpeedProfile;
 
 /**
  * This model contains two main data members as well as some data members used
@@ -23,12 +29,15 @@ public class ComputerModel {
 	 */
 	private int minSpeed = 30;
 
+	private List<FanSpeedProfile> profiles;
+
 	/**
 	 *
-	 * All members get initialised here.
+	 * All members get initialized here.
 	 */
 	public ComputerModel() {
 		grid = new GRID();
+		profiles = generateProfiles();
 
 		try {
 			sensor = new Sensor();
@@ -55,6 +64,10 @@ public class ComputerModel {
 			System.out.println("Temperature polling failed");
 			ex.printStackTrace();
 		}
+	}
+	
+	private List<FanSpeedProfile> generateProfiles() {
+		return IntStream.range(30 / 5, 100 / 5 + 1).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i })).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	/**
@@ -110,11 +123,23 @@ public class ComputerModel {
 	 * @return The temperature used to calculate fan speeds.
 	 */
 	public double getTemp() {
-		// TODO Calculate temp based on CPU/GPU
-		return 0;
+		// TODO Make configurable
+		return (sensor.getCPUTemp() + sensor.getGPUTemp()) / 2;
 	}
 
 	public void saveSettings() {
 		// TODO Implement
+	}
+
+	public List<FanSpeedProfile> getProfiles() {
+		return profiles;
+	}
+
+	public void setProfiles(List<FanSpeedProfile> profiles) {
+		this.profiles = profiles;
+	}
+
+	public void addProfile(FanSpeedProfile profile) {
+		profiles.add(profile);
 	}
 }

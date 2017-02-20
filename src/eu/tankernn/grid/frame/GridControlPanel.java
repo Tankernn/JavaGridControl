@@ -6,9 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Arrays;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -24,6 +22,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 
 import eu.tankernn.grid.FanSpeedProfile;
+import eu.tankernn.grid.GridControl;
 import eu.tankernn.grid.model.ComputerModel;
 
 public class GridControlPanel extends JFrame {
@@ -40,9 +39,9 @@ public class GridControlPanel extends JFrame {
 	private JMenuItem saveSettings = new JMenuItem("Save settings..."), addProfile = new JMenuItem("Add profile...");
 	
 	private FanPanel[] fanPanels;
-	private JPanel gridPanel = new JPanel(), infoPanel = new JPanel();
+	private JPanel serialPanel = new JPanel(), gridPanel = new JPanel(), infoPanel = new JPanel();
 
-	private JSpinner minSpeed = new JSpinner();
+	private JSpinner minSpeed = new JSpinner(new SpinnerNumberModel(30, 0, 100, 5)), pollingSpeed = new JSpinner(new SpinnerNumberModel(500, 100, 2000, 100));
 
 	private JComboBox<String> portMap = new JComboBox<>();
 
@@ -56,8 +55,6 @@ public class GridControlPanel extends JFrame {
 
 	private JLabel PowerLabel = new JLabel("Power");
 
-	private List<FanSpeedProfile> profiles;
-
 	private void setMinRPM(ChangeEvent event) {
 		getModel().setMinSpeed((int) minSpeed.getValue());
 	}
@@ -70,7 +67,7 @@ public class GridControlPanel extends JFrame {
 		getModel().setGrid(selectedPort);
 	}
 
-	public GridControlPanel(ComputerModel model) {
+	public GridControlPanel(GridControl control, ComputerModel model) {
 		setModel(model);
 		this.setLayout(new BorderLayout());
 		
@@ -80,13 +77,21 @@ public class GridControlPanel extends JFrame {
 		menuBar.add(profileMenu);
 		profileMenu.add(addProfile);
 		addProfile.addActionListener(e -> {
-			profiles.add(new ProfileEditor().editProfile(null));
+			FanSpeedProfile p = new ProfileEditor().editProfile(null);
+			model.addProfile(p);
+			Arrays.stream(fanPanels).forEach(f -> f.addProfile(p));
 		});
 		
 		this.setJMenuBar(this.menuBar);
+		
+		serialPanel.setLayout(new FlowLayout());
+		serialPanel.setBorder(new TitledBorder("Serial settings"));
+		serialPanel.add(labelledComponent("COM port: ", portMap));
+		serialPanel.add(labelledComponent("Polling speed: ", pollingSpeed));
+		this.add(serialPanel, BorderLayout.NORTH);
+		
 
-		profiles = generateProfiles();
-		fanPanels = model.getGrid().fanStream().map(f -> new FanPanel(f, profiles)).toArray(FanPanel[]::new);
+		fanPanels = model.getGrid().fanStream().map(f -> new FanPanel(f, model.getProfiles())).toArray(FanPanel[]::new);
 
 		gridPanel.setLayout(new GridLayout(3, 2));
 		for (FanPanel p : fanPanels)
@@ -95,7 +100,9 @@ public class GridControlPanel extends JFrame {
 		this.add(gridPanel, BorderLayout.CENTER);
 
 		minSpeed.addChangeListener(this::setMinRPM);
-		minSpeed.setModel(new SpinnerNumberModel(30, 0, 100, 5));
+		pollingSpeed.addChangeListener(e -> {
+			control.setPollingSpeed((int) pollingSpeed.getValue());
+		});
 		
 		infoPanel.setBorder(new TitledBorder("System info"));
 		infoPanel.setLayout(new GridLayout(3, 2));
@@ -113,7 +120,6 @@ public class GridControlPanel extends JFrame {
 				setPort(e);
 			}
 		});
-		this.add(labelledComponent("COM port: ", portMap), BorderLayout.NORTH);
 		
 		this.setTitle("JavaGridControl");
 	}
@@ -123,10 +129,6 @@ public class GridControlPanel extends JFrame {
 		panel.add(new JLabel(labelText));
 		panel.add(component);
 		return panel;
-	}
-
-	private List<FanSpeedProfile> generateProfiles() {
-		return IntStream.range(30 / 5, 100 / 5).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i })).collect(Collectors.toList());
 	}
 
 	/**

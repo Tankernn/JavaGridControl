@@ -28,10 +28,10 @@ public class GRID {
 	 * at the selected port
 	 */
 	public GRID() {
-		fans = IntStream.range(0, 6).mapToObj(i -> new Fan(this, i)).toArray(Fan[]::new);
-
 		communicator = new Communicator();
 		communicator.searchForPorts();
+		
+		fans = IntStream.range(0, 6).mapToObj(i -> new Fan(this, i)).toArray(Fan[]::new);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class GRID {
 	}
 
 	public double getTotalWattage() {
-		return Arrays.stream(fans).mapToDouble(Fan::getWattage).sum();
+		return fanStream().mapToDouble(Fan::getWattage).sum();
 	}
 
 	public void pollFans() {

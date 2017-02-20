@@ -11,6 +11,8 @@ import eu.tankernn.grid.model.ComputerModel;
 
 public class GridControl implements WindowListener, Runnable {
 	private Thread t;
+	
+	private int pollingSpeed = 500;
 
 	private ComputerModel model = new ComputerModel();
 
@@ -18,7 +20,7 @@ public class GridControl implements WindowListener, Runnable {
 
 	public GridControl(boolean gui) {
 		if (gui) {
-			frame = new GridControlPanel(model);
+			frame = new GridControlPanel(this, model);
 			frame.setResizable(true);
 			frame.pack();
 			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -39,8 +41,9 @@ public class GridControl implements WindowListener, Runnable {
 
 			if (frame != null)
 				frame.updateProperties();
+			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(pollingSpeed);
 			} catch (InterruptedException ex) {
 				System.out.println("Thread was interrupted.");
 				return;
@@ -98,6 +101,10 @@ public class GridControl implements WindowListener, Runnable {
 	public void windowDeactivated(WindowEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void setPollingSpeed(int value) {
+		this.pollingSpeed = value;
 	}
 
 }

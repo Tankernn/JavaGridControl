@@ -7,19 +7,18 @@ public class Fan {
 	private int rpm, index;
 	private GRID grid;
 	private FanSpeedProfile profile;
-	private int speed = 100;
+	private int speed = 0;
 
 	public Fan(GRID grid, int index) {
 		this.grid = grid;
 		this.index = index;
+		poll();
+		this.speed = (int) (100 * voltage / 12);
 	}
 
 	public void update(double temp, int minSpeed) {
-		if (profile != null)
-			this.speed = profile.getSpeedPercentage(temp);
-		if (this.speed < minSpeed)
-			this.speed = 0;
-		setFanSpeed(speed);
+		int calcSpeed = profile.getSpeedPercentage(temp);
+		setFanSpeed(calcSpeed < minSpeed ? 0 : calcSpeed);
 	}
 
 	public void poll() {
@@ -94,23 +93,28 @@ public class Fan {
 	 * converted to 4V the comma value of the commands are always rounded to .50
 	 * and .0
 	 * 
-	 * @param percent
+	 * @param newSpeed
 	 */
-	public void setFanSpeed(int percent) {
+	public void setFanSpeed(int newSpeed) {
+		if (newSpeed == speed)
+			return;
+		// Spin up to 100 during first tick after being turned off
+		if (speed == 0)
+			newSpeed = 100;
 		if (grid.getCommunicator().isConnected()) {
 			int firstByte, lastByte, wantedVoltage = 0;
 
 			// The voltages between 0 and 4 are not recognised by the grid so
 			// any voltage under 4 will still be 4 and from 0 it will be 0
-			if (percent <= 0) {
+			if (newSpeed <= 0) {
 				firstByte = 0;
 				lastByte = 0;
 
-			} else if (percent < 34) {
+			} else if (newSpeed < 34) {
 				firstByte = 4;
 				lastByte = 0;
 			} else {
-				wantedVoltage = (1200 * percent) / 100;
+				wantedVoltage = (1200 * newSpeed) / 100;
 				firstByte = wantedVoltage / 100;
 				lastByte = (wantedVoltage - (firstByte * 100));
 
@@ -120,17 +124,14 @@ public class Fan {
 					lastByte = 0x50;
 				}
 			}
-			
-			if (wantedVoltage == voltage)
-				return;
 
 			byte[] command = { 0x44, (byte) (index + 1), -64, 0x00, 0x00, (byte) firstByte, (byte) lastByte };
 
 			grid.getCommunicator().writeData(command);
-
+			speed = newSpeed;
 		}
 	}
-	
+
 	public void setProfile(FanSpeedProfile profile) {
 		this.profile = profile;
 	}

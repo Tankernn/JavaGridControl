@@ -120,10 +120,6 @@ public class Communicator {
 		}
 	}
 
-	// what happens when data is received
-	// pre: serial event is triggered
-	// post: processing on the data it reads
-
 	/**
 	 * This method reads data from the input stream and puts it in a buffer
 	 * after the data is read the method waits 50 msec to make sure a new
@@ -138,33 +134,20 @@ public class Communicator {
 		try {
 			if (input.available() > 0) {
 				try {
-
 					buffer = (new byte[32]);
-
 					leng = input.read(buffer);
-
-					// Debug.
-					/*
-					 * System.out.println("Length: " + getLeng());
-					 * 
-					 * for (int itera = 0; itera < leng; itera++) {
-					 * System.out.println("byte " + itera + ": " +
-					 * Integer.toHexString(getBuffer(itera) & 0xFF)); }
-					 */
 				} catch (Exception e) {
-					logText = "Failed to read data. (" + e.toString() + ")";
-					System.out.println(logText);
+					System.out.println("Failed to read data. (" + e.toString() + ")");
 				}
 			} else {
-				logText = "Failed to read data. No data to read";
-				// System.out.println(logText);
+				System.out.println("Failed to read data. No data to read");
 			}
 
 		} catch (IOException e) {
 			logText = "Failed to read data. (" + e.toString() + ")";
 			System.out.println(logText);
 		}
-		// This prevents commands from being send too soon
+		// This prevents commands from being sent too soon
 		sleep(50);
 		return buffer;
 	}

@@ -1,6 +1,7 @@
 package eu.tankernn.grid.frame;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class FanPanel extends JPanel {
 			profileBox.addItem(p);
 		this.fan = fan;
 
-		this.setBorder(new TitledBorder("Fan " + fan.getIndex()));
+		this.setBorder(new TitledBorder("Fan " + (fan.getIndex() + 1)));
 
 		this.setLayout(new GridLayout(4, 1));
 
@@ -39,9 +40,8 @@ public class FanPanel extends JPanel {
 		this.add(rpmLabel);
 		this.add(profileBox);
 
-		profileBox.addActionListener((e) -> {
-			fan.setProfile((FanSpeedProfile) profileBox.getSelectedItem());
-		});
+		profileBox.addActionListener(this::updateProfile);
+		this.updateProfile(null);
 	}
 
 	public void update() {
@@ -54,5 +54,9 @@ public class FanPanel extends JPanel {
 	
 	public void addProfile(FanSpeedProfile p) {
 		profileBox.addItem(p);
+	}
+	
+	private void updateProfile(ActionEvent e) {
+		fan.setProfile((FanSpeedProfile) profileBox.getSelectedItem());
 	}
 }
