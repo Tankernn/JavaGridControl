@@ -17,17 +17,15 @@ import javax.swing.border.TitledBorder;
 import eu.tankernn.grid.FanSpeedProfile;
 import eu.tankernn.grid.model.ComputerModel;
 
-public class GridControlPanel extends JPanel implements Runnable {
+public class GridControlPanel extends JPanel {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Thread t;
-
 	private ComputerModel model;
-
+	
 	private FanPanel[] fanPanels;
 	private JPanel gridPanel = new JPanel(), infoPanel = new JPanel();
 
@@ -90,10 +88,6 @@ public class GridControlPanel extends JPanel implements Runnable {
 			}
 		});
 		this.add(portMap, BorderLayout.NORTH);
-
-		t = new Thread(this);
-		t.setDaemon(true);
-		t.start();
 	}
 
 	private FanSpeedProfile[] generateProfiles() {
@@ -134,23 +128,6 @@ public class GridControlPanel extends JPanel implements Runnable {
 
 		for (FanPanel p : fanPanels)
 			p.update();
-	}
-
-	@Override
-	public void run() {
-		while (!t.isInterrupted()) {
-			model.poll();
-			model.compute();
-
-			updateProperties();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException ex) {
-				System.out.println("Thread was interrupted.");
-				return;
-			}
-		}
-
 	}
 
 	public ComputerModel getModel() {
