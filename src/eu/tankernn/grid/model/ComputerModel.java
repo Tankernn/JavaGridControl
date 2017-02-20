@@ -13,8 +13,7 @@ import java.util.logging.Logger;
  * @author Roel
  */
 public class ComputerModel {
-
-	// The main components of the Computermodel
+	
 	private Sensor sensor;
 	private GRID grid;
 
@@ -22,7 +21,7 @@ public class ComputerModel {
 	 * A global minimum percentage. This is used to prevent the controller from
 	 * constantly turning the fans on and off.
 	 */
-	private int minRPM = 30;
+	private int minSpeed = 30;
 
 	/**
 	 *
@@ -90,28 +89,20 @@ public class ComputerModel {
 	}
 
 	/**
-	 * This setter overwrites the old GRID with a new Object with the
-	 * selectedport as the COM port to connect to
+	 * Connects to the GRID on the port specified.
 	 *
-	 * @param selectedPort The com port the GRID controller is located at
+	 * @param selectedPort The COM port the GRID controller is located at
 	 */
 	public void setGrid(String selectedPort) {
 		grid.getCommunicator().connect(selectedPort);
 	}
 
-	/**
-	 * @return the minRPM
-	 */
-	public double getMinRPM() {
-		return minRPM;
+	public double getMinSpeed() {
+		return minSpeed;
 	}
-
-	/**
-	 *
-	 * @param minRPM
-	 */
-	public void setMinRPM(int minRPM) {
-		this.minRPM = minRPM;
+	
+	public void setMinSpeed(int minSpeed) {
+		this.minSpeed = minSpeed;
 	}
 	
 	/**

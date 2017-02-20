@@ -12,6 +12,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 import eu.tankernn.grid.FanSpeedProfile;
 import eu.tankernn.grid.model.ComputerModel;
@@ -28,17 +29,17 @@ public class GridControlPanel extends JPanel implements Runnable {
 	private ComputerModel model;
 
 	private FanPanel[] fanPanels;
-	private JPanel gridPanel = new JPanel();
+	private JPanel gridPanel = new JPanel(), infoPanel = new JPanel();
 
 	private JTextField minRPM = new JTextField();
 
 	private JComboBox<String> portMap = new JComboBox<>();
 
-	private JLabel CPULabel = new JLabel("CPU preferred");
+	private JLabel CPULabel = new JLabel("CPU:");
 
 	private JLabel CPULabelMax = new JLabel("CPU max");
 
-	private JLabel GPULabel = new JLabel("GPU preferred");
+	private JLabel GPULabel = new JLabel("GPU:");
 
 	private JLabel GPULabelMax = new JLabel("GPU max");
 
@@ -47,7 +48,7 @@ public class GridControlPanel extends JPanel implements Runnable {
 	private FanSpeedProfile[] profiles;
 
 	private void setMinRPM(ActionEvent event) {
-		getModel().setMinRPM(Integer.parseInt(minRPM.getText()));
+		getModel().setMinSpeed(Integer.parseInt(minRPM.getText()));
 	}
 
 	private void setPort(ItemEvent event) {
@@ -72,7 +73,16 @@ public class GridControlPanel extends JPanel implements Runnable {
 		this.add(gridPanel, BorderLayout.CENTER);
 
 		minRPM.addActionListener(this::setMinRPM);
-
+		
+		infoPanel.setBorder(new TitledBorder("System info"));
+		infoPanel.setLayout(new GridLayout(3, 2));
+		infoPanel.add(CPULabel);
+		infoPanel.add(GPULabel);
+		infoPanel.add(CPULabelMax);
+		infoPanel.add(GPULabelMax);
+		infoPanel.add(PowerLabel);
+		this.add(infoPanel, BorderLayout.SOUTH);
+		
 		portMap.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -116,11 +126,11 @@ public class GridControlPanel extends JPanel implements Runnable {
 	public void updateProperties() {
 		DecimalFormat df = new DecimalFormat("#.##");
 
-		CPULabel.setText(df.format(getModel().getSensor().getCPUTemp()) + " 째C");
-		PowerLabel.setText(df.format(getModel().getGrid().getTotalWattage()) + " W");
-		CPULabelMax.setText(df.format(getModel().getSensor().getCpuMax()) + " 째C Max");
-		GPULabel.setText(df.format(getModel().getSensor().getGPUTemp()) + " 째C");
-		GPULabelMax.setText(df.format(getModel().getSensor().getGpuMax()) + " 째C Max");
+		CPULabel.setText("CPU: " + df.format(getModel().getSensor().getCPUTemp()) + " 캜");
+		PowerLabel.setText("Total power: " + df.format(getModel().getGrid().getTotalWattage()) + " W");
+		CPULabelMax.setText("CPU: " + df.format(getModel().getSensor().getCpuMax()) + " 캜 Max");
+		GPULabel.setText("GPU: " + df.format(getModel().getSensor().getGPUTemp()) + " 캜");
+		GPULabelMax.setText("GPU: " + df.format(getModel().getSensor().getGpuMax()) + " 캜 Max");
 
 		for (FanPanel p : fanPanels)
 			p.update();
