@@ -1,8 +1,8 @@
 package eu.tankernn.grid.frame;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
@@ -11,8 +11,10 @@ import java.util.stream.IntStream;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
 
 import eu.tankernn.grid.FanSpeedProfile;
 import eu.tankernn.grid.model.ComputerModel;
@@ -29,7 +31,7 @@ public class GridControlPanel extends JPanel {
 	private FanPanel[] fanPanels;
 	private JPanel gridPanel = new JPanel(), infoPanel = new JPanel();
 
-	private JTextField minRPM = new JTextField();
+	private JSpinner minRPM = new JSpinner();
 
 	private JComboBox<String> portMap = new JComboBox<>();
 
@@ -45,8 +47,8 @@ public class GridControlPanel extends JPanel {
 
 	private FanSpeedProfile[] profiles;
 
-	private void setMinRPM(ActionEvent event) {
-		getModel().setMinSpeed(Integer.parseInt(minRPM.getText()));
+	private void setMinRPM(ChangeEvent event) {
+		getModel().setMinSpeed((int) minRPM.getValue());
 	}
 
 	private void setPort(ItemEvent event) {
@@ -70,7 +72,8 @@ public class GridControlPanel extends JPanel {
 
 		this.add(gridPanel, BorderLayout.CENTER);
 
-		minRPM.addActionListener(this::setMinRPM);
+		minRPM.addChangeListener(this::setMinRPM);
+		minRPM.setModel(new SpinnerNumberModel(30, 0, 100, 5));
 		
 		infoPanel.setBorder(new TitledBorder("System info"));
 		infoPanel.setLayout(new GridLayout(3, 2));
@@ -79,6 +82,10 @@ public class GridControlPanel extends JPanel {
 		infoPanel.add(CPULabelMax);
 		infoPanel.add(GPULabelMax);
 		infoPanel.add(PowerLabel);
+		JPanel minSpeedPanel = new JPanel(new FlowLayout());
+		minSpeedPanel.add(new JLabel("Minimum speed (%): "));
+		minSpeedPanel.add(minRPM);
+		infoPanel.add(minSpeedPanel);
 		this.add(infoPanel, BorderLayout.SOUTH);
 		
 		portMap.addItemListener(new ItemListener() {

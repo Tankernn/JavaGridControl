@@ -66,7 +66,7 @@ public class ComputerModel {
 	 *
 	 */
 	public void compute() {
-		grid.updateFanSpeeds(getTemp());
+		grid.updateFanSpeeds(getTemp(), minSpeed);
 	}
 
 	/**

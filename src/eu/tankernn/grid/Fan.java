@@ -14,10 +14,11 @@ public class Fan {
 		this.index = index;
 	}
 
-	public void update(double temp) {
+	public void update(double temp, int minSpeed) {
 		if (profile != null)
 			this.speed = profile.getSpeedPercentage(temp);
-		
+		if (this.speed < minSpeed)
+			this.speed = 0;
 		setFanSpeed(speed);
 	}
 
