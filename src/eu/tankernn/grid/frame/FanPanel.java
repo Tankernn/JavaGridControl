@@ -2,6 +2,7 @@ package eu.tankernn.grid.frame;
 
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -24,7 +25,7 @@ public class FanPanel extends JPanel {
 			rpmLabel = new JLabel();
 	private JComboBox<FanSpeedProfile> profileBox = new JComboBox<>();
 
-	public FanPanel(Fan fan, FanSpeedProfile[] profiles) {
+	public FanPanel(Fan fan, List<FanSpeedProfile> profiles) {
 		for (FanSpeedProfile p : profiles)
 			profileBox.addItem(p);
 		this.fan = fan;

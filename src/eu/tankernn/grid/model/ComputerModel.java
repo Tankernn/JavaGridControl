@@ -113,4 +113,8 @@ public class ComputerModel {
 		// TODO Calculate temp based on CPU/GPU
 		return 0;
 	}
+
+	public void saveSettings() {
+		// TODO Implement
+	}
 }

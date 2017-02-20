@@ -14,13 +14,11 @@ public class GridControl implements WindowListener, Runnable {
 
 	private ComputerModel model = new ComputerModel();
 
-	private JFrame frame;
-	private GridControlPanel panel;
+	private GridControlPanel frame;
 
 	public GridControl(boolean gui) {
 		if (gui) {
-			frame = new JFrame("JavaGridControl");
-			frame.add(panel = new GridControlPanel(model));
+			frame = new GridControlPanel(model);
 			frame.setResizable(true);
 			frame.pack();
 			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -39,8 +37,8 @@ public class GridControl implements WindowListener, Runnable {
 			model.poll();
 			model.compute();
 
-			if (panel != null)
-				panel.updateProperties();
+			if (frame != null)
+				frame.updateProperties();
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException ex) {
@@ -68,7 +66,7 @@ public class GridControl implements WindowListener, Runnable {
 	@Override
 	public void windowClosing(WindowEvent e) {
 		t.interrupt();
-		panel.getModel().getGrid().disconnect();
+		model.getGrid().disconnect();
 		e.getWindow().dispose();
 	}
 

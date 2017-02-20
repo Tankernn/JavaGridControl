@@ -6,10 +6,17 @@ import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -19,7 +26,7 @@ import javax.swing.event.ChangeEvent;
 import eu.tankernn.grid.FanSpeedProfile;
 import eu.tankernn.grid.model.ComputerModel;
 
-public class GridControlPanel extends JPanel {
+public class GridControlPanel extends JFrame {
 
 	/**
 	 * 
@@ -28,10 +35,14 @@ public class GridControlPanel extends JPanel {
 
 	private ComputerModel model;
 	
+	private JMenuBar menuBar = new JMenuBar();
+	private JMenu fileMenu = new JMenu("File"), profileMenu = new JMenu("Profiles");
+	private JMenuItem saveSettings = new JMenuItem("Save settings..."), addProfile = new JMenuItem("Add profile...");
+	
 	private FanPanel[] fanPanels;
 	private JPanel gridPanel = new JPanel(), infoPanel = new JPanel();
 
-	private JSpinner minRPM = new JSpinner();
+	private JSpinner minSpeed = new JSpinner();
 
 	private JComboBox<String> portMap = new JComboBox<>();
 
@@ -45,10 +56,10 @@ public class GridControlPanel extends JPanel {
 
 	private JLabel PowerLabel = new JLabel("Power");
 
-	private FanSpeedProfile[] profiles;
+	private List<FanSpeedProfile> profiles;
 
 	private void setMinRPM(ChangeEvent event) {
-		getModel().setMinSpeed((int) minRPM.getValue());
+		getModel().setMinSpeed((int) minSpeed.getValue());
 	}
 
 	private void setPort(ItemEvent event) {
@@ -62,6 +73,17 @@ public class GridControlPanel extends JPanel {
 	public GridControlPanel(ComputerModel model) {
 		setModel(model);
 		this.setLayout(new BorderLayout());
+		
+		menuBar.add(fileMenu);
+		fileMenu.add(saveSettings);
+		saveSettings.addActionListener(e -> model.saveSettings());
+		menuBar.add(profileMenu);
+		profileMenu.add(addProfile);
+		addProfile.addActionListener(e -> {
+			profiles.add(new ProfileEditor().editProfile(null));
+		});
+		
+		this.setJMenuBar(this.menuBar);
 
 		profiles = generateProfiles();
 		fanPanels = model.getGrid().fanStream().map(f -> new FanPanel(f, profiles)).toArray(FanPanel[]::new);
@@ -72,8 +94,8 @@ public class GridControlPanel extends JPanel {
 
 		this.add(gridPanel, BorderLayout.CENTER);
 
-		minRPM.addChangeListener(this::setMinRPM);
-		minRPM.setModel(new SpinnerNumberModel(30, 0, 100, 5));
+		minSpeed.addChangeListener(this::setMinRPM);
+		minSpeed.setModel(new SpinnerNumberModel(30, 0, 100, 5));
 		
 		infoPanel.setBorder(new TitledBorder("System info"));
 		infoPanel.setLayout(new GridLayout(3, 2));
@@ -82,10 +104,7 @@ public class GridControlPanel extends JPanel {
 		infoPanel.add(CPULabelMax);
 		infoPanel.add(GPULabelMax);
 		infoPanel.add(PowerLabel);
-		JPanel minSpeedPanel = new JPanel(new FlowLayout());
-		minSpeedPanel.add(new JLabel("Minimum speed (%): "));
-		minSpeedPanel.add(minRPM);
-		infoPanel.add(minSpeedPanel);
+		infoPanel.add(labelledComponent("Minimum speed (%): ", minSpeed));
 		this.add(infoPanel, BorderLayout.SOUTH);
 		
 		portMap.addItemListener(new ItemListener() {
@@ -94,11 +113,20 @@ public class GridControlPanel extends JPanel {
 				setPort(e);
 			}
 		});
-		this.add(portMap, BorderLayout.NORTH);
+		this.add(labelledComponent("COM port: ", portMap), BorderLayout.NORTH);
+		
+		this.setTitle("JavaGridControl");
+	}
+	
+	private JPanel labelledComponent(String labelText, JComponent component) {
+		JPanel panel = new JPanel(new FlowLayout());
+		panel.add(new JLabel(labelText));
+		panel.add(component);
+		return panel;
 	}
 
-	private FanSpeedProfile[] generateProfiles() {
-		return IntStream.range(30 / 5, 100 / 5).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i })).toArray(FanSpeedProfile[]::new);
+	private List<FanSpeedProfile> generateProfiles() {
+		return IntStream.range(30 / 5, 100 / 5).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i })).collect(Collectors.toList());
 	}
 
 	/**
