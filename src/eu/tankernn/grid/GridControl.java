@@ -2,16 +2,29 @@ package eu.tankernn.grid;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Arrays;
 
 import javax.swing.JFrame;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import eu.tankernn.grid.frame.GridControlPanel;
 import eu.tankernn.grid.model.ComputerModel;
 
 public class GridControl implements WindowListener, Runnable {
+
+	private static final String PROFILE_PATH = "profiles.json";
+	private static final String SETTINGS_PATH = "settings.json";
+
 	private Thread t;
-	
+
 	private int pollingSpeed = 500;
 
 	private ComputerModel model = new ComputerModel();
@@ -19,6 +32,8 @@ public class GridControl implements WindowListener, Runnable {
 	private GridControlPanel frame;
 
 	public GridControl(boolean gui) {
+		readSettings();
+		
 		if (gui) {
 			frame = new GridControlPanel(this, model);
 			frame.setResizable(true);
@@ -32,6 +47,47 @@ public class GridControl implements WindowListener, Runnable {
 		t.setDaemon(true);
 		t.start();
 	}
+	
+	public void readSettings() {
+		Gson gson = new GsonBuilder().create();
+		try (Reader reader = new FileReader(PROFILE_PATH)) {
+			Arrays.stream(gson.fromJson(reader, FanSpeedProfile[].class)).forEach(model::addProfile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try (Reader reader = new FileReader(SETTINGS_PATH)) {
+			Settings settings = gson.fromJson(reader, Settings.class);
+			model.getGrid().getCommunicator().connect(settings.portname);
+			for (int i = 0; i < 6; i++)
+				model.getGrid().getFan(i).setProfile(model.getProfile(settings.fanProfiles[i]));
+			pollingSpeed = settings.pollingRate;
+			model.setMinSpeed(settings.minSpeed);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void saveSettings() {
+		Gson gson = new GsonBuilder().create();
+		// Save profiles
+		try (Writer writer = new FileWriter(PROFILE_PATH)) {
+			gson.toJson(model.getCustomProfiles(), writer);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		// Save misc. settings
+		try (Writer writer = new FileWriter(SETTINGS_PATH)) {
+			gson.toJson(new Settings(model.getGrid().getCommunicator().getPortName(),
+					model.getGrid().fanStream().map(f -> f.getProfile().name).toArray(String[]::new), pollingSpeed,
+					model.getMinSpeed()), writer);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void run() {
@@ -41,7 +97,7 @@ public class GridControl implements WindowListener, Runnable {
 
 			if (frame != null)
 				frame.updateProperties();
-			
+
 			try {
 				Thread.sleep(pollingSpeed);
 			} catch (InterruptedException ex) {
@@ -54,7 +110,8 @@ public class GridControl implements WindowListener, Runnable {
 
 	/**
 	 * 
-	 * @param args the command line arguments
+	 * @param args
+	 *            the command line arguments
 	 */
 	public static void main(String[] args) {
 		new GridControl(!Arrays.asList(args).contains("nogui"));

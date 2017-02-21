@@ -204,5 +204,9 @@ public class Communicator {
 	public boolean isConnected() {
 		return serialPort != null && serialPort.isOpen();
 	}
+	
+	public String getPortName() {
+		return serialPort.getSystemPortName();
+	}
 
 }

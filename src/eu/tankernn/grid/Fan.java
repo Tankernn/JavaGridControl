@@ -164,4 +164,8 @@ public class Fan {
 	public int getIndex() {
 		return index;
 	}
+
+	public FanSpeedProfile getProfile() {
+		return profile;
+	}
 }

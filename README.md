@@ -10,5 +10,4 @@ A Java-based, open-source alternative to the default control software for the NZ
 
 ##TODO
 - Make a config file to save user settings in.
-- Make it possible to control fans according to the temperatures of GPU, CPU or both.
-- Manual and profile-based fan speeds.
+- Make it possible to set weights for different temperature readings.

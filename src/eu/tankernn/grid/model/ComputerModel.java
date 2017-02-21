@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import eu.tankernn.grid.FanSpeedProfile;
 
@@ -19,7 +20,7 @@ import eu.tankernn.grid.FanSpeedProfile;
  * @author Roel
  */
 public class ComputerModel {
-	
+
 	private Sensor sensor;
 	private GRID grid;
 
@@ -29,7 +30,7 @@ public class ComputerModel {
 	 */
 	private int minSpeed = 30;
 
-	private List<FanSpeedProfile> profiles;
+	private List<FanSpeedProfile> defaultProfiles, customProfiles = new ArrayList<>();
 
 	/**
 	 *
@@ -37,7 +38,7 @@ public class ComputerModel {
 	 */
 	public ComputerModel() {
 		grid = new GRID();
-		profiles = generateProfiles();
+		defaultProfiles = generateProfiles();
 
 		try {
 			sensor = new Sensor();
@@ -65,9 +66,11 @@ public class ComputerModel {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	private List<FanSpeedProfile> generateProfiles() {
-		return IntStream.range(30 / 5, 100 / 5 + 1).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i })).collect(Collectors.toCollection(ArrayList::new));
+		return IntStream.range(30 / 5, 100 / 5 + 1).map(i -> i * 5)
+				.mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i }))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	/**
@@ -104,20 +107,21 @@ public class ComputerModel {
 	/**
 	 * Connects to the GRID on the port specified.
 	 *
-	 * @param selectedPort The COM port the GRID controller is located at
+	 * @param selectedPort
+	 *            The COM port the GRID controller is located at
 	 */
 	public void setGrid(String selectedPort) {
 		grid.getCommunicator().connect(selectedPort);
 	}
 
-	public double getMinSpeed() {
+	public int getMinSpeed() {
 		return minSpeed;
 	}
-	
+
 	public void setMinSpeed(int minSpeed) {
 		this.minSpeed = minSpeed;
 	}
-	
+
 	/**
 	 * 
 	 * @return The temperature used to calculate fan speeds.
@@ -127,19 +131,23 @@ public class ComputerModel {
 		return (sensor.getCPUTemp() + sensor.getGPUTemp()) / 2;
 	}
 
-	public void saveSettings() {
-		// TODO Implement
-	}
-
 	public List<FanSpeedProfile> getProfiles() {
-		return profiles;
+		return Stream.concat(defaultProfiles.stream(), customProfiles.stream()).collect(Collectors.toList());
+	}
+	
+	public List<FanSpeedProfile> getCustomProfiles() {
+		return customProfiles;
 	}
 
 	public void setProfiles(List<FanSpeedProfile> profiles) {
-		this.profiles = profiles;
+		this.defaultProfiles = profiles;
 	}
 
 	public void addProfile(FanSpeedProfile profile) {
-		profiles.add(profile);
+		customProfiles.add(profile);
+	}
+
+	public FanSpeedProfile getProfile(String string) {
+		return getProfiles().stream().filter(p -> p.name.equals(string)).findFirst().get();
 	}
 }

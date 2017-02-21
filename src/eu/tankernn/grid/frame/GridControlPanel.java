@@ -73,7 +73,7 @@ public class GridControlPanel extends JFrame {
 		
 		menuBar.add(fileMenu);
 		fileMenu.add(saveSettings);
-		saveSettings.addActionListener(e -> model.saveSettings());
+		saveSettings.addActionListener(e -> control.saveSettings());
 		menuBar.add(profileMenu);
 		profileMenu.add(addProfile);
 		addProfile.addActionListener(e -> {
@@ -157,11 +157,11 @@ public class GridControlPanel extends JFrame {
 	public void updateProperties() {
 		DecimalFormat df = new DecimalFormat("#.##");
 
-		CPULabel.setText("CPU: " + df.format(getModel().getSensor().getCPUTemp()) + " °C");
+		CPULabel.setText("CPU: " + df.format(getModel().getSensor().getCPUTemp()) + " ï¿½C");
 		PowerLabel.setText("Total power: " + df.format(getModel().getGrid().getTotalWattage()) + " W");
-		CPULabelMax.setText("CPU: " + df.format(getModel().getSensor().getCpuMax()) + " °C Max");
-		GPULabel.setText("GPU: " + df.format(getModel().getSensor().getGPUTemp()) + " °C");
-		GPULabelMax.setText("GPU: " + df.format(getModel().getSensor().getGpuMax()) + " °C Max");
+		CPULabelMax.setText("CPU: " + df.format(getModel().getSensor().getCpuMax()) + " ï¿½C Max");
+		GPULabel.setText("GPU: " + df.format(getModel().getSensor().getGPUTemp()) + " ï¿½C");
+		GPULabelMax.setText("GPU: " + df.format(getModel().getSensor().getGpuMax()) + " ï¿½C Max");
 
 		for (FanPanel p : fanPanels)
 			p.update();
