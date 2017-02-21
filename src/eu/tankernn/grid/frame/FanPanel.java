@@ -27,12 +27,12 @@ public class FanPanel extends JPanel {
 	private JComboBox<FanSpeedProfile> profileBox = new JComboBox<>();
 
 	public FanPanel(Fan fan, List<FanSpeedProfile> profiles) {
+		this.fan = fan;
 		for (FanSpeedProfile p : profiles)
 			profileBox.addItem(p);
-		this.fan = fan;
+		profileBox.setSelectedItem(fan.getProfile());
 
 		this.setBorder(new TitledBorder("Fan " + (fan.getIndex() + 1)));
-
 		this.setLayout(new GridLayout(4, 1));
 
 		this.add(voltageLabel);

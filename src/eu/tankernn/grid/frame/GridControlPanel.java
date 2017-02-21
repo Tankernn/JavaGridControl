@@ -98,8 +98,11 @@ public class GridControlPanel extends JFrame {
 			gridPanel.add(p);
 
 		this.add(gridPanel, BorderLayout.CENTER);
-
+		
+		minSpeed.setValue(model.getMinSpeed());
 		minSpeed.addChangeListener(this::setMinRPM);
+		
+		pollingSpeed.setValue(control.getPollingSpeed());
 		pollingSpeed.addChangeListener(e -> {
 			control.setPollingSpeed((int) pollingSpeed.getValue());
 		});
@@ -156,12 +159,12 @@ public class GridControlPanel extends JFrame {
 	 */
 	public void updateProperties() {
 		DecimalFormat df = new DecimalFormat("#.##");
-
-		CPULabel.setText("CPU: " + df.format(getModel().getSensor().getCPUTemp()) + " �C");
+		// \u00B0 = "Degree sign"
+		CPULabel.setText("CPU: " + df.format(getModel().getSensor().getCPUTemp()) + " \u00B0C");
 		PowerLabel.setText("Total power: " + df.format(getModel().getGrid().getTotalWattage()) + " W");
-		CPULabelMax.setText("CPU: " + df.format(getModel().getSensor().getCpuMax()) + " �C Max");
-		GPULabel.setText("GPU: " + df.format(getModel().getSensor().getGPUTemp()) + " �C");
-		GPULabelMax.setText("GPU: " + df.format(getModel().getSensor().getGpuMax()) + " �C Max");
+		CPULabelMax.setText("CPU: " + df.format(getModel().getSensor().getCpuMax()) + " \u00B0C Max");
+		GPULabel.setText("GPU: " + df.format(getModel().getSensor().getGPUTemp()) + " \u00B0C");
+		GPULabelMax.setText("GPU: " + df.format(getModel().getSensor().getGpuMax()) + " \u00B0C Max");
 
 		for (FanPanel p : fanPanels)
 			p.update();

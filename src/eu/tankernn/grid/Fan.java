@@ -35,8 +35,7 @@ public class Fan {
 	 * data is then converted to a double
 	 */
 	private void pollAMP() {
-		// 0x85 = -123
-		current = pollValue((byte) 0x85, (a, b) -> (double) a + b / 100);
+		current = pollValue((byte) 0x85, (a, b) -> a + (double) b / 100);
 	}
 
 	/**
@@ -45,7 +44,6 @@ public class Fan {
 	 * then converted to an int
 	 */
 	private void pollRPM() {
-		// 0x8A = -118
 		rpm = pollValue((byte) 0x8A, (a, b) -> (double) ((a << 8) | b)).intValue();
 	}
 
@@ -55,8 +53,7 @@ public class Fan {
 	 * converted to a double
 	 */
 	private void pollVoltage() {
-		// 0x84 = -124
-		voltage = pollValue((byte) 0x84, (a, b) -> (double) a + b / 100);
+		voltage = pollValue((byte) 0x84, (a, b) -> a + (double) b / 100);
 	}
 
 	private Double pollValue(byte commandByte, BiFunction<Integer, Integer, Double> resultConsumer) {
@@ -85,7 +82,7 @@ public class Fan {
 		if (newSpeed == speed)
 			return;
 		// Spin up to 100 during first tick after being turned off
-		if (speed == 0)
+		else if (speed == 0)
 			newSpeed = 100;
 		if (grid.getCommunicator().isConnected()) {
 			int firstByte, lastByte, wantedVoltage = 0;
