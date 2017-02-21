@@ -22,13 +22,6 @@ public class Communicator {
 	private InputStream input = null;
 	private OutputStream output = null;
 
-	// Buffer
-	private int leng;
-	private byte[] buffer;
-
-	// a string for recording what goes on in the program
-	String logText = "";
-
 	/**
 	 *
 	 * This method searches for COM ports on the system and saves their
@@ -68,8 +61,7 @@ public class Communicator {
 			// logging
 			System.out.println(selectedPort + " opened successfully.");
 		} catch (Exception e) {
-			logText = "Failed to open " + selectedPort + "(" + e.toString() + ")";
-			System.out.println(logText);
+			System.out.println("Failed to open " + selectedPort + "(" + e.toString() + ")");
 			e.printStackTrace();
 		}
 	}
@@ -97,7 +89,7 @@ public class Communicator {
 	}
 
 	private boolean ping() {
-		writeData(new byte[] { (byte) 0xc0 });
+		byte[] buffer = writeData(new byte[] { (byte) 0xc0 });
 		return buffer[0] == 0x21;
 	}
 
@@ -115,8 +107,7 @@ public class Communicator {
 			serialPort.closePort();
 			System.out.println("Disconnected.");
 		} catch (IOException e) {
-			logText = "Failed to close " + serialPort.getSystemPortName() + "(" + e.toString() + ")";
-			System.out.println(logText);
+			System.err.println("Failed to close " + serialPort.getSystemPortName() + "(" + e.toString() + ")");
 		}
 	}
 
@@ -131,66 +122,37 @@ public class Communicator {
 	 * 
 	 */
 	private byte[] serialRead() throws InterruptedException {
-		try {
-			if (input.available() > 0) {
-				try {
-					buffer = (new byte[32]);
-					leng = input.read(buffer);
-				} catch (Exception e) {
-					System.out.println("Failed to read data. (" + e.toString() + ")");
-				}
-			} else {
-				System.out.println("Failed to read data. No data to read");
-			}
-
-		} catch (IOException e) {
-			logText = "Failed to read data. (" + e.toString() + ")";
-			System.out.println(logText);
-		}
 		// This prevents commands from being sent too soon
 		sleep(50);
-		return buffer;
+		try {
+			if (input.available() > 0) {
+				byte[] buffer = new byte[input.available()];
+				input.read(buffer);
+				return buffer;
+			} else {
+				System.err.println("Failed to read data. No data to read");
+			}
+		} catch (IOException e) {
+			System.err.println("Failed to read data. (" + e.toString() + ")");
+		}
+		return new byte[32];
 	}
 
 	/**
 	 * This method sends a byte array command over the serial communication
 	 * afterwards the method calls the read method
 	 * 
-	 * @param command an array of bytes as a command
+	 * @param command
+	 *            an array of bytes as a command
 	 */
 	public byte[] writeData(byte[] command) {
 		try {
 			output.write(command);
 			sleep(50);
 			return serialRead();
-		} catch (Exception e) {
-			logText = "Failed to write data. (" + e.toString() + ")";
-			System.out.println(logText);
+		} catch (InterruptedException | IOException e) {
+			System.out.println("Failed to write data. (" + e.toString() + ")");
 			return new byte[32];
-		}
-	}
-
-	/**
-	 *
-	 * @return The second to last byte of the buffer
-	 */
-	public byte getSecondToLast() {
-		if (leng >= 2) {
-			return buffer[leng - 2];
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 *
-	 * @return The last byte of the buffer
-	 */
-	public byte getlast() {
-		if (leng >= 2) {
-			return buffer[leng - 1];
-		} else {
-			return 0;
 		}
 	}
 
@@ -204,7 +166,7 @@ public class Communicator {
 	public boolean isConnected() {
 		return serialPort != null && serialPort.isOpen();
 	}
-	
+
 	public String getPortName() {
 		return serialPort.getSystemPortName();
 	}

@@ -1,5 +1,7 @@
 package eu.tankernn.grid;
 
+import java.util.function.BiFunction;
+
 import eu.tankernn.grid.model.GRID;
 
 public class Fan {
@@ -22,8 +24,8 @@ public class Fan {
 	}
 
 	public void poll() {
-		pollFanAMP();
-		pollFanRPM();
+		pollAMP();
+		pollRPM();
 		pollVoltage();
 	}
 
@@ -31,41 +33,20 @@ public class Fan {
 	 * This method polls the Fan Amperage of the fan with index fan it first
 	 * send the poll command and reads the byte data from the buffer this byte
 	 * data is then converted to a double
-	 * 
-	 * @param fan the index of the fan
 	 */
-	public void pollFanAMP() {
-		if (grid.getCommunicator().isConnected()) {
-			// 0x85 = -123
-			byte[] command = { -123, (byte) (index + 1) };
-
-			grid.getCommunicator().writeData(command);
-
-			current = (double) (((int) grid.getCommunicator().getSecondToLast() & 0xFF) + (((double) (grid.getCommunicator().getlast() & 0xff) / 100)));
-		} else {
-			current = 0d;
-		}
+	private void pollAMP() {
+		// 0x85 = -123
+		current = pollValue((byte) 0x85, (a, b) -> (double) a + b / 100);
 	}
 
 	/**
 	 * This method polls the Fan RPM of the fan with index fan it first send the
 	 * poll command and reads the byte data from the buffer this byte data is
 	 * then converted to an int
-	 * 
-	 * @param fan the index of the fan
 	 */
-	public void pollFanRPM() {
-		if (grid.getCommunicator().isConnected()) {
-			// 0x8A = -118
-			byte[] command = { -118, (byte) (index + 1) };
-
-			grid.getCommunicator().writeData(command);
-
-			rpm = (((int) (grid.getCommunicator().getSecondToLast() & 0xFF) << 8) | ((grid.getCommunicator().getlast() & 0xFF)));
-		} else {
-			rpm = 0;
-
-		}
+	private void pollRPM() {
+		// 0x8A = -118
+		rpm = pollValue((byte) 0x8A, (a, b) -> (double) ((a << 8) | b)).intValue();
 	}
 
 	/**
@@ -73,16 +54,21 @@ public class Fan {
 	 * command and reads the byte data from the buffer this byte data is then
 	 * converted to a double
 	 */
-	public void pollVoltage() {
+	private void pollVoltage() {
+		// 0x84 = -124
+		voltage = pollValue((byte) 0x84, (a, b) -> (double) a + b / 100);
+	}
+
+	private Double pollValue(byte commandByte, BiFunction<Integer, Integer, Double> resultConsumer) {
 		if (grid.getCommunicator().isConnected()) {
-			// 0x84 = -124
-			byte[] command = { -124, (byte) (index + 1) };
+			byte[] command = { commandByte, (byte) (index + 1) };
 
-			grid.getCommunicator().writeData(command);
+			byte[] response = grid.getCommunicator().writeData(command);
 
-			voltage = (double) (((int) grid.getCommunicator().getSecondToLast() & 0xFF) + (((double) (grid.getCommunicator().getlast() & 0xff) / 100)));
+			return resultConsumer.apply((response[response.length - 2] & 0xFF),
+					(response[response.length - 1] & 0xff));
 		} else {
-			voltage = 0d;
+			return 0d;
 		}
 	}
 
@@ -114,7 +100,7 @@ public class Fan {
 				firstByte = 4;
 				lastByte = 0;
 			} else {
-				wantedVoltage = (1200 * newSpeed) / 100;
+				wantedVoltage = 1200 * newSpeed / 100;
 				firstByte = wantedVoltage / 100;
 				lastByte = (wantedVoltage - (firstByte * 100));
 
