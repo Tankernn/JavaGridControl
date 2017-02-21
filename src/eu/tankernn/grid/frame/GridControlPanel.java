@@ -145,7 +145,7 @@ public class GridControlPanel extends JFrame {
 		this.model = model;
 
 		portMap.removeAllItems();
-		for (String key : model.getGrid().getCommunicator().getPortMap().keySet()) {
+		for (String key : model.getPortMap().keySet()) {
 			portMap.addItem(key);
 		}
 		

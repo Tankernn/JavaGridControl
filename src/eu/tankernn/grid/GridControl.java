@@ -59,7 +59,7 @@ public class GridControl implements WindowListener, Runnable {
 		}
 		try (Reader reader = new FileReader(SETTINGS_PATH)) {
 			Settings settings = gson.fromJson(reader, Settings.class);
-			model.getGrid().getCommunicator().connect(settings.portname);
+			model.setGrid(settings.portname);
 			for (int i = 0; i < 6; i++)
 				model.getGrid().getFan(i).setProfile(model.getProfile(settings.fanProfiles[i]));
 			pollingSpeed = settings.pollingRate;
@@ -127,6 +127,7 @@ public class GridControl implements WindowListener, Runnable {
 	public void windowClosing(WindowEvent e) {
 		t.interrupt();
 		model.getGrid().disconnect();
+		saveSettings();
 		e.getWindow().dispose();
 	}
 
@@ -162,6 +163,10 @@ public class GridControl implements WindowListener, Runnable {
 
 	public void setPollingSpeed(int value) {
 		this.pollingSpeed = value;
+	}
+
+	public int getPollingSpeed() {
+		return pollingSpeed;
 	}
 
 }

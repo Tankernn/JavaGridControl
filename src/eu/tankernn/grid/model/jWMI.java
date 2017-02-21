@@ -143,8 +143,7 @@ public class jWMI {
      * @param envVarName the name of the env var to get
      * @return the value of the env var
      * @throws IOException 
-     * @throws InvalidNameException 
-     * @throws Exception if the given envVarName does not exist
+     * @throws InvalidNameException if the given envVarName does not exist
      *
      */
     private static String getEnvVar(String envVarName) throws IOException, InvalidNameException {

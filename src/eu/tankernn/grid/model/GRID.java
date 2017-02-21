@@ -7,40 +7,27 @@ import java.util.stream.Stream;
 import eu.tankernn.grid.Fan;
 
 /**
- *
- * This is a model for the GRID controller. This class uses the communicator
- * class to communicate to the GRID+ controller. To update their values they
- * each have poll functions instead of setters which send a command to the GRID
- * and read the response.
+ * This class uses the communicator class to communicate with the GRID+
+ * controller.
  * 
- * This class also has a boolean check that checks if the voltage command is the
- * same as the previous voltage command, this is to prevent pointless serial
- * communication.
- * 
- * @author Roel
+ * @author Frans
  */
 public class GRID {
-	private Communicator communicator;
-	private Fan[] fans;
-
-	/**
-	 * This constructor initiates all members afterwards it opens a communicator
-	 * at the selected port
-	 */
-	public GRID() {
-		communicator = new Communicator();
-		communicator.searchForPorts();
-		
-		fans = IntStream.range(0, 6).mapToObj(i -> new Fan(this, i)).toArray(Fan[]::new);
-	}
+	private Communicator communicator = new Communicator();
+	private Fan[] fans = IntStream.range(0, 6).mapToObj(i -> new Fan(communicator, i)).toArray(Fan[]::new);
 
 	/**
 	 * This method simply runs the disconnect method of the communicator.
 	 */
 	public void disconnect() {
-		getCommunicator().disconnect();
+		communicator.disconnect();
 	}
-
+	
+	/**
+	 * Gets the fan at the specified index.
+	 * @param index The fan index (0-5)
+	 * @return The fan object
+	 */
 	public Fan getFan(int index) {
 		return fans[index];
 	}

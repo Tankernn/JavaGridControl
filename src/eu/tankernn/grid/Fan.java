@@ -2,17 +2,17 @@ package eu.tankernn.grid;
 
 import java.util.function.BiFunction;
 
-import eu.tankernn.grid.model.GRID;
+import eu.tankernn.grid.model.Communicator;
 
 public class Fan {
 	private double voltage, current;
 	private int rpm, index;
-	private GRID grid;
+	private Communicator communicator;
 	private FanSpeedProfile profile;
 	private int speed = 0;
 
-	public Fan(GRID grid, int index) {
-		this.grid = grid;
+	public Fan(Communicator communicator, int index) {
+		this.communicator = communicator;
 		this.index = index;
 		poll();
 		this.speed = (int) (100 * voltage / 12);
@@ -57,10 +57,10 @@ public class Fan {
 	}
 
 	private Double pollValue(byte commandByte, BiFunction<Integer, Integer, Double> resultConsumer) {
-		if (grid.getCommunicator().isConnected()) {
+		if (communicator.isConnected()) {
 			byte[] command = { commandByte, (byte) (index + 1) };
 
-			byte[] response = grid.getCommunicator().writeData(command);
+			byte[] response = communicator.writeData(command);
 
 			return resultConsumer.apply((response[response.length - 2] & 0xFF),
 					(response[response.length - 1] & 0xff));
@@ -84,7 +84,7 @@ public class Fan {
 		// Spin up to 100 during first tick after being turned off
 		else if (speed == 0)
 			newSpeed = 100;
-		if (grid.getCommunicator().isConnected()) {
+		if (communicator.isConnected()) {
 			int firstByte, lastByte, wantedVoltage = 0;
 
 			// The voltages between 0 and 4 are not recognised by the grid so
@@ -110,7 +110,7 @@ public class Fan {
 
 			byte[] command = { 0x44, (byte) (index + 1), -64, 0x00, 0x00, (byte) firstByte, (byte) lastByte };
 
-			grid.getCommunicator().writeData(command);
+			communicator.writeData(command);
 			speed = newSpeed;
 		}
 	}
