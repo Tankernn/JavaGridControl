@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>eu.tankernn.camsucks</groupId>
-	<artifactId>CamSucks</artifactId>
-	<version>0.0.1</version>
-	<name>CAM Sucks</name>
+	<groupId>eu.tankernn.grid</groupId>
+	<artifactId>java-grid-control</artifactId>
+	<version>1.0.0</version>
+	<name>JavaGridControl</name>
 	<description>An alternative app for controlling the NZXT GRID+.</description>
 
 	<dependencies>
@@ -23,16 +23,35 @@
 	</dependencies>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
+		<finalName>${project.artifactId}-${project.version}.${build.number}</finalName>
 		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<addClasspath>true</addClasspath>
+									<mainClass>eu.tankernn.grid.GridControl</mainClass>
+								</manifest>
+							</archive>
+							<!-- The filename of the assembled distribution file defualt ${project.build.finalName} -->
+							<finalName>${project.build.finalName}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.6.1</version>
@@ -43,4 +62,8 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<properties>
+		<build.number>SNAPSHOT</build.number>
+	</properties>
 </project>

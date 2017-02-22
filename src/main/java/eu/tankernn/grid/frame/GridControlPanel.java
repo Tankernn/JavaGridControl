@@ -33,15 +33,19 @@ public class GridControlPanel extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private ComputerModel model;
-	
-	private JMenuBar menuBar = new JMenuBar();
-	private JMenu fileMenu = new JMenu("File"), profileMenu = new JMenu("Profiles");
-	private JMenuItem saveSettings = new JMenuItem("Save settings..."), addProfile = new JMenuItem("Add profile...");
-	
-	private FanPanel[] fanPanels;
-	private JPanel serialPanel = new JPanel(), gridPanel = new JPanel(), infoPanel = new JPanel();
 
-	private JSpinner minSpeed = new JSpinner(new SpinnerNumberModel(30, 0, 100, 5)), pollingSpeed = new JSpinner(new SpinnerNumberModel(500, 100, 2000, 100));
+	private JMenuBar menuBar = new JMenuBar();
+	private JMenu fileMenu = new JMenu("File"),
+			profileMenu = new JMenu("Profiles");
+	private JMenuItem saveSettings = new JMenuItem("Save settings..."),
+			addProfile = new JMenuItem("Add profile...");
+
+	private FanPanel[] fanPanels;
+	private JPanel serialPanel = new JPanel(), gridPanel = new JPanel(),
+			infoPanel = new JPanel();
+
+	private JSpinner minSpeed = new JSpinner(new SpinnerNumberModel(30, 0, 100, 5)),
+			pollingSpeed = new JSpinner(new SpinnerNumberModel(500, 100, 2000, 100));
 
 	private JComboBox<String> portMap = new JComboBox<>();
 
@@ -70,7 +74,7 @@ public class GridControlPanel extends JFrame {
 	public GridControlPanel(GridControl control, ComputerModel model) {
 		setModel(model);
 		this.setLayout(new BorderLayout());
-		
+
 		menuBar.add(fileMenu);
 		fileMenu.add(saveSettings);
 		saveSettings.addActionListener(e -> control.saveSettings());
@@ -78,18 +82,19 @@ public class GridControlPanel extends JFrame {
 		profileMenu.add(addProfile);
 		addProfile.addActionListener(e -> {
 			FanSpeedProfile p = new ProfileEditor().editProfile(null);
-			model.addProfile(p);
-			Arrays.stream(fanPanels).forEach(f -> f.addProfile(p));
+			if (p != null) {
+				model.addProfile(p);
+				Arrays.stream(fanPanels).forEach(f -> f.addProfile(p));
+			}
 		});
-		
+
 		this.setJMenuBar(this.menuBar);
-		
+
 		serialPanel.setLayout(new FlowLayout());
 		serialPanel.setBorder(new TitledBorder("Serial settings"));
 		serialPanel.add(labelledComponent("COM port: ", portMap));
 		serialPanel.add(labelledComponent("Polling speed: ", pollingSpeed));
 		this.add(serialPanel, BorderLayout.NORTH);
-		
 
 		fanPanels = model.getGrid().fanStream().map(f -> new FanPanel(f, model.getProfiles())).toArray(FanPanel[]::new);
 
@@ -98,15 +103,15 @@ public class GridControlPanel extends JFrame {
 			gridPanel.add(p);
 
 		this.add(gridPanel, BorderLayout.CENTER);
-		
+
 		minSpeed.setValue(model.getMinSpeed());
 		minSpeed.addChangeListener(this::setMinRPM);
-		
+
 		pollingSpeed.setValue(control.getPollingSpeed());
 		pollingSpeed.addChangeListener(e -> {
 			control.setPollingSpeed((int) pollingSpeed.getValue());
 		});
-		
+
 		infoPanel.setBorder(new TitledBorder("System info"));
 		infoPanel.setLayout(new GridLayout(3, 2));
 		infoPanel.add(CPULabel);
@@ -116,17 +121,17 @@ public class GridControlPanel extends JFrame {
 		infoPanel.add(PowerLabel);
 		infoPanel.add(labelledComponent("Minimum speed (%): ", minSpeed));
 		this.add(infoPanel, BorderLayout.SOUTH);
-		
+
 		portMap.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				setPort(e);
 			}
 		});
-		
+
 		this.setTitle("JavaGridControl");
 	}
-	
+
 	private JPanel labelledComponent(String labelText, JComponent component) {
 		JPanel panel = new JPanel(new FlowLayout());
 		panel.add(new JLabel(labelText));
@@ -148,7 +153,7 @@ public class GridControlPanel extends JFrame {
 		for (String key : model.getPortMap().keySet()) {
 			portMap.addItem(key);
 		}
-		
+
 		setPort(null);
 	}
 

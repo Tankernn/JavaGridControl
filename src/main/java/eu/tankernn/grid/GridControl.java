@@ -1,7 +1,11 @@
 package eu.tankernn.grid;
 
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -10,6 +14,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import com.google.gson.Gson;
@@ -18,42 +23,78 @@ import com.google.gson.GsonBuilder;
 import eu.tankernn.grid.frame.GridControlPanel;
 import eu.tankernn.grid.model.ComputerModel;
 
-public class GridControl implements WindowListener, Runnable {
+public class GridControl implements Runnable {
 
 	private static final String PROFILE_PATH = "profiles.json";
 	private static final String SETTINGS_PATH = "settings.json";
 
-	private Thread t;
+	private Thread t = new Thread(this, "Polling thread");
 
 	private int pollingSpeed = 500;
 
 	private ComputerModel model = new ComputerModel();
 
 	private GridControlPanel frame;
+	private TrayIcon trayIcon;
 
 	public GridControl(boolean gui) {
 		readSettings();
-		
+
 		if (gui) {
+			Image image;
+			try {
+				image = ImageIO.read(ClassLoader.class.getResourceAsStream("/JGC.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
 			frame = new GridControlPanel(this, model);
 			frame.setResizable(true);
+			frame.setIconImage(image);
 			frame.pack();
-			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-			frame.addWindowListener(this);
+			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			frame.setVisible(true);
+			addTrayIcon(image);
 		}
 
-		t = new Thread(this);
-		t.setDaemon(true);
 		t.start();
 	}
-	
+
+	private void addTrayIcon(Image image) {
+		// Check the SystemTray is supported
+		if (!SystemTray.isSupported()) {
+			System.out.println("SystemTray is not supported");
+			return;
+		}
+		final PopupMenu popup = new PopupMenu();
+
+		// Create a pop-up menu components
+		MenuItem openItem = new MenuItem("Open");
+		openItem.addActionListener(a -> frame.setVisible(true));
+		MenuItem exitItem = new MenuItem("Exit");
+		exitItem.addActionListener(a -> this.exit());
+
+		// Add components to pop-up menu
+		popup.add(openItem);
+		popup.addSeparator();
+		popup.add(exitItem);
+
+		trayIcon = new TrayIcon(image, "JavaGridControl", popup);
+		trayIcon.setImageAutoSize(true);
+
+		try {
+			SystemTray.getSystemTray().add(trayIcon);
+		} catch (AWTException e) {
+			System.out.println("TrayIcon could not be added.");
+		}
+	}
+
 	public void readSettings() {
 		Gson gson = new GsonBuilder().create();
 		try (Reader reader = new FileReader(PROFILE_PATH)) {
 			Arrays.stream(gson.fromJson(reader, FanSpeedProfile[].class)).forEach(model::addProfile);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			// Not a problem
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -65,7 +106,9 @@ public class GridControl implements WindowListener, Runnable {
 			pollingSpeed = settings.pollingRate;
 			model.setMinSpeed(settings.minSpeed);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("No config file found, using default settings.");
+			for (int i = 0; i < 6; i++)
+				model.getGrid().getFan(i).setProfile(model.getProfiles().get(0));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -81,9 +124,7 @@ public class GridControl implements WindowListener, Runnable {
 		}
 		// Save misc. settings
 		try (Writer writer = new FileWriter(SETTINGS_PATH)) {
-			gson.toJson(new Settings(model.getGrid().getCommunicator().getPortName(),
-					model.getGrid().fanStream().map(f -> f.getProfile().name).toArray(String[]::new), pollingSpeed,
-					model.getMinSpeed()), writer);
+			gson.toJson(new Settings(model.getGrid().getCommunicator().getPortName(), model.getGrid().fanStream().map(f -> f.getProfile().name).toArray(String[]::new), pollingSpeed, model.getMinSpeed()), writer);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -110,55 +151,21 @@ public class GridControl implements WindowListener, Runnable {
 
 	/**
 	 * 
-	 * @param args
-	 *            the command line arguments
+	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
 		new GridControl(!Arrays.asList(args).contains("nogui"));
 	}
 
-	@Override
-	public void windowOpened(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void windowClosing(WindowEvent e) {
+	public void exit() {
 		t.interrupt();
 		model.getGrid().disconnect();
 		saveSettings();
-		e.getWindow().dispose();
-	}
-
-	@Override
-	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void windowIconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-
+		frame.dispose();
+		SystemTray.getSystemTray().remove(trayIcon);
+		for (Thread t : Thread.getAllStackTraces().keySet())
+			if (t.isAlive())
+				System.out.println(t);
 	}
 
 	public void setPollingSpeed(int value) {
