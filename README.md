@@ -1,5 +1,6 @@
 # JavaGridControl
 [![Build Status](https://tankernn.eu/jenkins/buildStatus/icon?job=JavaGridControl)](https://tankernn.eu/jenkins/job/JavaGridControl)
+
 A Java-based, open-source alternative to the default control software for the NZXT GRID+ and GRID+v2.
 
 ## Usage
@@ -18,9 +19,10 @@ A Java-based, open-source alternative to the default control software for the NZ
 - On windows systems, this class communicates with an external program called openhardwaremonitor @ http://openhardwaremonitor.org/
 
 ##TODO
-- Make it possible to set weights for different temperature readings.
-- Linux support.
+- Make it possible to set weights for different temperature readings. Make it possible to select temperature readings from a list.
+- Move to [SystemTray](https://github.com/dorkbox/SystemTray)
 - Unit tests
 - GUI Improvements
-  - More menu items (exit, etc.)
+  - More menu items (exit, start minimized, configure sensors, etc.)
   - Profile Editor labels
+  - Sensor Editor
