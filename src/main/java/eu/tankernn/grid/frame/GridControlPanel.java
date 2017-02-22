@@ -51,11 +51,9 @@ public class GridControlPanel extends JFrame {
 
 	private JLabel CPULabel = new JLabel("CPU:");
 
-	private JLabel CPULabelMax = new JLabel("CPU max");
+	private JLabel CPULoadLabel = new JLabel("CPU load");
 
 	private JLabel GPULabel = new JLabel("GPU:");
-
-	private JLabel GPULabelMax = new JLabel("GPU max");
 
 	private JLabel PowerLabel = new JLabel("Power");
 
@@ -116,8 +114,7 @@ public class GridControlPanel extends JFrame {
 		infoPanel.setLayout(new GridLayout(3, 2));
 		infoPanel.add(CPULabel);
 		infoPanel.add(GPULabel);
-		infoPanel.add(CPULabelMax);
-		infoPanel.add(GPULabelMax);
+		infoPanel.add(CPULoadLabel);
 		infoPanel.add(PowerLabel);
 		infoPanel.add(labelledComponent("Minimum speed (%): ", minSpeed));
 		this.add(infoPanel, BorderLayout.SOUTH);
@@ -167,9 +164,8 @@ public class GridControlPanel extends JFrame {
 		// \u00B0 = "Degree sign"
 		CPULabel.setText("CPU: " + df.format(getModel().getSensor().getCPUTemp()) + " \u00B0C");
 		PowerLabel.setText("Total power: " + df.format(getModel().getGrid().getTotalWattage()) + " W");
-		CPULabelMax.setText("CPU: " + df.format(getModel().getSensor().getCpuMax()) + " \u00B0C Max");
+		CPULoadLabel.setText("CPU load: " + df.format(getModel().getSensor().getCpuLoad()) + " %");
 		GPULabel.setText("GPU: " + df.format(getModel().getSensor().getGPUTemp()) + " \u00B0C");
-		GPULabelMax.setText("GPU: " + df.format(getModel().getSensor().getGpuMax()) + " \u00B0C Max");
 
 		for (FanPanel p : fanPanels)
 			p.update();

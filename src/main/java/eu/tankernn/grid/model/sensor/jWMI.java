@@ -1,4 +1,4 @@
-package eu.tankernn.grid.model;
+package eu.tankernn.grid.model.sensor;
 
 import java.io.BufferedReader;
 import java.io.File;

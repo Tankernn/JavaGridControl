@@ -12,6 +12,8 @@ import java.util.stream.Stream;
 import com.fazecast.jSerialComm.SerialPort;
 
 import eu.tankernn.grid.FanSpeedProfile;
+import eu.tankernn.grid.model.sensor.Sensor;
+import eu.tankernn.grid.model.sensor.SensorFactory;
 
 /**
  * This model contains two main data members as well as some data members used
@@ -51,7 +53,7 @@ public class ComputerModel {
 		defaultProfiles = generateProfiles();
 
 		try {
-			sensor = new Sensor();
+			sensor = SensorFactory.getSensor();
 		} catch (Exception ex) {
 			Logger.getLogger(ComputerModel.class.getName()).log(Level.SEVERE, "Failed to init sensor.", ex);
 		}
@@ -79,10 +81,7 @@ public class ComputerModel {
 		grid.pollFans();
 
 		try {
-			getSensor().pollCPUTemp();
-			getSensor().pollCPUMax();
-			getSensor().pollGPUTemp();
-			getSensor().pollGPUMax();
+			sensor.poll();
 		} catch (Exception ex) {
 			System.out.println("Temperature polling failed");
 			ex.printStackTrace();
