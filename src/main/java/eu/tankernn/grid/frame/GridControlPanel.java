@@ -35,16 +35,13 @@ public class GridControlPanel extends JFrame {
 	private ComputerModel model;
 
 	private JMenuBar menuBar = new JMenuBar();
-	private JMenu fileMenu = new JMenu("File"),
-			settingsMenu = new JMenu("Settings"),
+	private JMenu fileMenu = new JMenu("File"), settingsMenu = new JMenu("Settings"),
 			profileMenu = new JMenu("Profiles");
 	private JMenuItem saveSettings = new JMenuItem("Save settings..."),
-			sensorConf = new JMenuItem("Configure sensors..."),
-			addProfile = new JMenuItem("Add profile...");
+			sensorConf = new JMenuItem("Configure sensors..."), addProfile = new JMenuItem("Add profile...");
 
 	private FanPanel[] fanPanels;
-	private JPanel serialPanel = new JPanel(), gridPanel = new JPanel(),
-			infoPanel = new JPanel();
+	private JPanel serialPanel = new JPanel(), gridPanel = new JPanel(), infoPanel = new JPanel();
 
 	private JSpinner minSpeed = new JSpinner(new SpinnerNumberModel(30, 0, 100, 5)),
 			pollingSpeed = new JSpinner(new SpinnerNumberModel(500, 100, 2000, 100));
@@ -130,7 +127,7 @@ public class GridControlPanel extends JFrame {
 		this.setTitle("JavaGridControl");
 	}
 
-	private JPanel labelledComponent(String labelText, JComponent component) {
+	static JPanel labelledComponent(String labelText, JComponent component) {
 		JPanel panel = new JPanel(new FlowLayout());
 		panel.add(new JLabel(labelText));
 		panel.add(component);
@@ -142,7 +139,8 @@ public class GridControlPanel extends JFrame {
 	 * certain UI elements are updated Finally a pollAndCompute Thread is
 	 * started
 	 *
-	 * @param model the model to set
+	 * @param model
+	 *            the model to set
 	 */
 	private void setModel(ComputerModel model) {
 		this.model = model;
