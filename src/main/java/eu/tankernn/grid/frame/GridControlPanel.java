@@ -36,8 +36,10 @@ public class GridControlPanel extends JFrame {
 
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu fileMenu = new JMenu("File"),
+			settingsMenu = new JMenu("Settings"),
 			profileMenu = new JMenu("Profiles");
 	private JMenuItem saveSettings = new JMenuItem("Save settings..."),
+			sensorConf = new JMenuItem("Configure sensors..."),
 			addProfile = new JMenuItem("Add profile...");
 
 	private FanPanel[] fanPanels;
@@ -62,11 +64,7 @@ public class GridControlPanel extends JFrame {
 	}
 
 	private void setPort(ItemEvent event) {
-		String selectedPort = (String) portMap.getSelectedItem();
-
-		getModel().getGrid().disconnect();
-
-		getModel().setGrid(selectedPort);
+		model.setGrid((String) portMap.getSelectedItem());
 	}
 
 	public GridControlPanel(GridControl control, ComputerModel model) {
@@ -76,6 +74,9 @@ public class GridControlPanel extends JFrame {
 		menuBar.add(fileMenu);
 		fileMenu.add(saveSettings);
 		saveSettings.addActionListener(e -> control.saveSettings());
+		menuBar.add(settingsMenu);
+		settingsMenu.add(sensorConf);
+		sensorConf.addActionListener(e -> new SensorConfig(model.getSensor()));
 		menuBar.add(profileMenu);
 		profileMenu.add(addProfile);
 		addProfile.addActionListener(e -> {

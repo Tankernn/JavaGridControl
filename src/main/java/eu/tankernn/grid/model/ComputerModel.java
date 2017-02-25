@@ -40,8 +40,7 @@ public class ComputerModel {
 	 */
 	private int minSpeed = 30;
 
-	private List<FanSpeedProfile> defaultProfiles,
-			customProfiles = new ArrayList<>();
+	private List<FanSpeedProfile> defaultProfiles, customProfiles = new ArrayList<>();
 
 	/**
 	 *
@@ -89,7 +88,9 @@ public class ComputerModel {
 	}
 
 	private List<FanSpeedProfile> generateProfiles() {
-		return IntStream.range(30 / 5, 100 / 5 + 1).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i })).collect(Collectors.toCollection(ArrayList::new));
+		return IntStream.range(30 / 5, 100 / 5 + 1).map(i -> i * 5)
+				.mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i }))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	/**
@@ -126,7 +127,8 @@ public class ComputerModel {
 	/**
 	 * Connects to the GRID on the port specified.
 	 *
-	 * @param selectedPort The COM port the GRID controller is located at
+	 * @param selectedPort
+	 *            The COM port the GRID controller is located at
 	 */
 	public void setGrid(String selectedPort) {
 		if (!portMap.containsKey(selectedPort)) {

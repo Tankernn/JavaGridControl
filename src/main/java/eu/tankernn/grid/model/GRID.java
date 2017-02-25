@@ -22,10 +22,12 @@ public class GRID {
 	public void disconnect() {
 		communicator.disconnect();
 	}
-	
+
 	/**
 	 * Gets the fan at the specified index.
-	 * @param index The fan index (0-5)
+	 * 
+	 * @param index
+	 *            The fan index (0-5)
 	 * @return The fan object
 	 */
 	public Fan getFan(int index) {
@@ -41,7 +43,8 @@ public class GRID {
 	}
 
 	public void pollFans() {
-		fanStream().forEach(Fan::poll);
+		if (communicator.isConnected())
+			fanStream().forEach(Fan::poll);
 	}
 
 	public void updateFanSpeeds(double temp, int minSpeed) {

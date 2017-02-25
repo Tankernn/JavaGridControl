@@ -22,6 +22,7 @@ public class Communicator {
 	 * @param selectedPort
 	 */
 	public void connect(SerialPort selectedPort) {
+		disconnect();
 		try {
 			serialPort = selectedPort;
 
@@ -44,6 +45,7 @@ public class Communicator {
 			}
 
 			System.err.println("Device did not respond correctly to ping.");
+			serialPort.closePort();
 		} catch (Exception e) {
 			System.out.println("Failed to open " + selectedPort.getSystemPortName() + ".");
 			e.printStackTrace();
