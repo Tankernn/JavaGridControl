@@ -37,7 +37,7 @@ public class GridControlPanel extends JFrame {
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu fileMenu = new JMenu("File"), settingsMenu = new JMenu("Settings"),
 			profileMenu = new JMenu("Profiles");
-	private JMenuItem saveSettings = new JMenuItem("Save settings..."),
+	private JMenuItem saveSettings = new JMenuItem("Save settings..."), exit = new JMenuItem("Exit"),
 			sensorConf = new JMenuItem("Configure sensors..."), addProfile = new JMenuItem("Add profile...");
 
 	private FanPanel[] fanPanels;
@@ -69,6 +69,8 @@ public class GridControlPanel extends JFrame {
 		this.setLayout(new BorderLayout());
 
 		menuBar.add(fileMenu);
+		fileMenu.add(exit);
+		exit.addActionListener(a -> control.exit());
 		fileMenu.add(saveSettings);
 		saveSettings.addActionListener(e -> control.saveSettings());
 		menuBar.add(settingsMenu);

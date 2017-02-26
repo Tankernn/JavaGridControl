@@ -19,10 +19,8 @@ A Java-based, open-source alternative to the default control software for the NZ
 - On windows systems, this class communicates with an external program called openhardwaremonitor @ http://openhardwaremonitor.org/
 
 ##TODO
-- Make it possible to set weights for different temperature readings. Make it possible to select temperature readings from a list.
+- Make it possible to set weights for different temperature readings.
 - Move to [SystemTray](https://github.com/dorkbox/SystemTray)
 - Unit tests
 - GUI Improvements
-  - More menu items (exit, start minimized, configure sensors, etc.)
-  - Profile Editor labels
-  - Sensor Editor
+  - More menu items (start minimized, start on boot, etc.)
