@@ -1,8 +1,11 @@
 package eu.tankernn.grid.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -16,20 +19,17 @@ import eu.tankernn.grid.model.sensor.Sensor;
 import eu.tankernn.grid.model.sensor.SensorFactory;
 
 /**
- * This model contains two main data members as well as some data members used
- * to configure the calculations and two checks
+ * This model contains two main data members as well as global configuration
+ * fields.
  *
- * Along with all the getters and setters this model has two methods used for
- * polling and calculating.
- *
- * @author Roel
+ * @author Frans
  */
 public class ComputerModel {
 
 	/**
-	 * Maps port names to port objects
+	 * Maps port names to port objects.
 	 */
-	private HashMap<String, SerialPort> portMap = new HashMap<>();
+	private Map<String, SerialPort> portMap = new HashMap<>();
 
 	private Sensor sensor;
 	private GRID grid;
@@ -43,8 +43,8 @@ public class ComputerModel {
 	private List<FanSpeedProfile> defaultProfiles, customProfiles = new ArrayList<>();
 
 	/**
-	 *
-	 * All members get initialized here.
+	 * Populates the port map, generates the default speed profiles and
+	 * initializes the GRID and sensors.
 	 */
 	public ComputerModel() {
 		scanPorts();
@@ -63,18 +63,12 @@ public class ComputerModel {
 	 * identifiers in the map with their name as key.
 	 */
 	public void scanPorts() {
-		SerialPort[] ports = SerialPort.getCommPorts();
-
-		for (SerialPort p : ports) {
-			portMap.put(p.getSystemPortName(), p);
-		}
+		portMap = Arrays.stream(SerialPort.getCommPorts())
+				.collect(Collectors.toMap(SerialPort::getSystemPortName, Function.identity()));
 	}
 
 	/**
-	 *
-	 * Currently only the pollCPUPackageTemp method of the sensor object is
-	 * called This can change in the future
-	 *
+	 * Polls the GRID and the sensor.
 	 */
 	public void poll() {
 		grid.pollFans();
@@ -146,7 +140,7 @@ public class ComputerModel {
 		this.minSpeed = minSpeed;
 	}
 
-	public HashMap<String, SerialPort> getPortMap() {
+	public Map<String, SerialPort> getPortMap() {
 		return portMap;
 	}
 
