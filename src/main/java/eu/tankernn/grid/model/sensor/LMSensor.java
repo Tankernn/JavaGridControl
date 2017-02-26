@@ -16,7 +16,7 @@ public class LMSensor extends Sensor {
 		try {
 			proc.waitFor();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			System.err.println("LMSensor polling was interrupted.");
 			return;
 		}
 

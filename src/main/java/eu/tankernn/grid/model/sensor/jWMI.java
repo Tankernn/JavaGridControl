@@ -38,13 +38,6 @@ import javax.naming.InvalidNameException;
  *
  * @author Copyright 2009-2010 HenryRanch LLC. Author Shaun Henry, 2009-2010.
  * @version 1.0
- * 
- * Changes by Roel:     rewritten the getVBScript function and added two variants getVBScriptList and getVBScriptValue to work with the OpenHardwareMonitor WMI Classes
- *                      rewritten the getWMIValue and added another variant getWMISensorList
- *                      Changed some demoqueries for testing purposes.
- *                      
- *                 
- *
  */
 public class jWMI {
 
@@ -57,7 +50,6 @@ public class jWMI {
      * @param SensorType The sensorType to get a list form.
      * <br>i.e. "Load"
      * @return the vbscript string.
-     *
      */
     private static String getVBScriptList(String SensorType) {
         String vbs = "strComputer = \".\"" + CRLF;
@@ -90,20 +82,7 @@ public class jWMI {
      *
      */
     private static String getVBScriptValue(String SensorType, String name) {
-        String vbs = "strComputer = \".\"" + CRLF;
-        vbs += "strNameSpace = \"root\\OpenHardwareMonitor\"" + CRLF;
-        vbs += "Dim oWMI : Set oWMI = GetObject(\"winmgmts:{impersonationLevel=impersonate}!\\\\\" & strComputer & \"\\\" & strNameSpace )" + CRLF;
-        vbs += "Dim classComponent : Set classComponent = oWMI.ExecQuery(\"Select * from Sensor\")" + CRLF;
-        vbs += "Dim obj, strData" + CRLF;
-        vbs += "For Each obj in classComponent" + CRLF;
-        vbs += "    If obj.SensorType = \"" + SensorType + "\" then" + CRLF;
-        vbs += "        If obj.Name = \"" + name + "\" then" + CRLF;
-        vbs += "            strData = strData & obj.Value" + CRLF;
-        vbs += "        End If" + CRLF;
-        vbs += "    End If" + CRLF;
-        vbs += "Next" + CRLF;
-        vbs += "wscript.echo strData" + CRLF;
-        return vbs;
+    	return getVBScriptValue(SensorType, name, "Value");
     }
     
     /**
