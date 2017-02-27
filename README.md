@@ -14,13 +14,13 @@ A Java-based, open-source alternative to the default control software for the NZ
 ## Credit
 - This project was originally a fork of [RoelGo/CamSucks](https://github.com/RoelGo/CamSucks)
 - The reverse engineering of the GRID+ communication was done by rizvanrp, their site is no longer available but here is a screenshot of their article on the GRID+. http://research.domaintools.com/research/screenshot-history/rizvanrp.com/#0
-- Some of the serial command codes were taken from [akej74/grid-control](https://github.com/akej74/grid-control)
+- Some of the serial command codes and GUI ideas were taken from [akej74/grid-control](https://github.com/akej74/grid-control).
 - The sensor data on windows systems is read with the help of the jWMI class made by Henry Ranch @ http://henryranch.net
 - On windows systems, this class communicates with an external program called openhardwaremonitor @ http://openhardwaremonitor.org/
+- This project uses [SystemTray](https://github.com/dorkbox/SystemTray).
 
 ##TODO
 - Make it possible to set weights for different temperature readings.
-- Move to [SystemTray](https://github.com/dorkbox/SystemTray)
 - Unit tests
 - GUI Improvements
   - More menu items (start minimized, start on boot, etc.)

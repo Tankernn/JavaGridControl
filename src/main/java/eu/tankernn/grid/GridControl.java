@@ -1,11 +1,6 @@
 package eu.tankernn.grid;
 
-import java.awt.AWTException;
 import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.TrayIcon;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -16,12 +11,15 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JSeparator;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import dorkbox.systemTray.MenuItem;
+import dorkbox.systemTray.SystemTray;
 import eu.tankernn.grid.frame.GridControlPanel;
 import eu.tankernn.grid.model.ComputerModel;
 
@@ -37,7 +35,6 @@ public class GridControl implements Runnable {
 	private ComputerModel model = new ComputerModel();
 
 	private GridControlPanel frame;
-	private TrayIcon trayIcon;
 
 	public GridControl(boolean gui) {
 		readSettings();
@@ -63,32 +60,26 @@ public class GridControl implements Runnable {
 	}
 
 	private void addTrayIcon(Image image) {
-		// Check the SystemTray is supported
-		if (!SystemTray.isSupported()) {
-			System.out.println("SystemTray is not supported");
-			return;
+		SystemTray systemTray = SystemTray.get();
+		if (systemTray == null) {
+			throw new RuntimeException("Unable to load SystemTray!");
 		}
-		final PopupMenu popup = new PopupMenu();
 
-		// Create a pop-up menu components
-		MenuItem openItem = new MenuItem("Open");
-		openItem.addActionListener(a -> frame.setVisible(true));
-		MenuItem exitItem = new MenuItem("Exit");
-		exitItem.addActionListener(a -> this.exit());
+		systemTray.setImage(image);
 
-		// Add components to pop-up menu
-		popup.add(openItem);
-		popup.addSeparator();
-		popup.add(exitItem);
+		systemTray.setStatus("Not Running");
 
-		trayIcon = new TrayIcon(image, "JavaGridControl", popup);
-		trayIcon.setImageAutoSize(true);
+		systemTray.getMenu().add(new MenuItem("Show", a -> {
+			frame.setVisible(true);
+		}));
+		
+		systemTray.getMenu().add(new JSeparator());
 
-		try {
-			SystemTray.getSystemTray().add(trayIcon);
-		} catch (AWTException e) {
-			System.out.println("TrayIcon could not be added.");
-		}
+		systemTray.getMenu().add(new MenuItem("Quit", a -> {
+			systemTray.shutdown();
+			exit();
+		})).setShortcut('q'); // case does not matter
+
 	}
 
 	public void readSettings() {
@@ -178,7 +169,6 @@ public class GridControl implements Runnable {
 		model.getGrid().disconnect();
 		saveSettings();
 		frame.dispose();
-		SystemTray.getSystemTray().remove(trayIcon);
 		for (Thread t : Thread.getAllStackTraces().keySet())
 			if (t.isAlive())
 				System.out.println(t);
