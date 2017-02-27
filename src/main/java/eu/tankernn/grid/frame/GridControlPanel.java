@@ -83,7 +83,7 @@ public class GridControlPanel extends JFrame {
 		settingsMenu.add(sensorConf);
 		sensorConf.addActionListener(e -> new SensorConfig(model.getSensor()));
 		settingsMenu.add(startMinimized);
-		startMinimized.addActionListener(e -> control.setStartMinimized(startMinimized.isEnabled()));
+		startMinimized.addActionListener(e -> control.setStartMinimized(startMinimized.isSelected()));
 		menuBar.add(profileMenu);
 		profileMenu.add(addProfile);
 		addProfile.addActionListener(e -> addProfile());

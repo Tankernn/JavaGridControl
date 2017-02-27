@@ -1,5 +1,6 @@
 package eu.tankernn.grid;
 
+import java.io.IOException;
 import java.util.function.BiFunction;
 
 import eu.tankernn.grid.model.Communicator;
@@ -14,16 +15,26 @@ public class Fan {
 	public Fan(Communicator communicator, int index) {
 		this.communicator = communicator;
 		this.index = index;
-		poll();
+		try {
+			poll();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		this.speed = (int) (100 * voltage / 12);
 	}
 
 	public void update(double temp, int minSpeed) {
 		int calcSpeed = profile.getSpeedPercentage(temp);
-		setFanSpeed(calcSpeed < minSpeed ? 0 : calcSpeed);
+		try {
+			setFanSpeed(calcSpeed < minSpeed ? 0 : calcSpeed);
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void poll() {
+	public void poll() throws IOException, InterruptedException {
 		pollAMP();
 		pollRPM();
 		pollVoltage();
@@ -33,8 +44,10 @@ public class Fan {
 	 * This method polls the Fan Amperage of the fan with index fan it first
 	 * send the poll command and reads the byte data from the buffer this byte
 	 * data is then converted to a double
+	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
-	private void pollAMP() {
+	private void pollAMP() throws IOException, InterruptedException {
 		current = pollValue((byte) 0x85, (a, b) -> a + (double) b / 100);
 	}
 
@@ -42,8 +55,10 @@ public class Fan {
 	 * This method polls the Fan RPM of the fan with index fan it first send the
 	 * poll command and reads the byte data from the buffer this byte data is
 	 * then converted to an int
+	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
-	private void pollRPM() {
+	private void pollRPM() throws IOException, InterruptedException {
 		rpm = pollValue((byte) 0x8A, (a, b) -> (double) ((a << 8) | b)).intValue();
 	}
 
@@ -51,12 +66,14 @@ public class Fan {
 	 * This method polls the voltage of all the fans it first send the poll
 	 * command and reads the byte data from the buffer this byte data is then
 	 * converted to a double
+	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
-	private void pollVoltage() {
+	private void pollVoltage() throws IOException, InterruptedException {
 		voltage = pollValue((byte) 0x84, (a, b) -> a + (double) b / 100);
 	}
 
-	private Double pollValue(byte commandByte, BiFunction<Integer, Integer, Double> resultConsumer) {
+	private Double pollValue(byte commandByte, BiFunction<Integer, Integer, Double> resultConsumer) throws IOException, InterruptedException {
 		if (communicator.isConnected()) {
 			byte[] command = { commandByte, (byte) (index + 1) };
 
@@ -77,8 +94,10 @@ public class Fan {
 	 * and .0
 	 * 
 	 * @param newSpeed
+	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
-	public void setFanSpeed(int newSpeed) {
+	public void setFanSpeed(int newSpeed) throws IOException, InterruptedException {
 		if (newSpeed == speed)
 			return;
 		// Spin up to 100 during first tick after being turned off

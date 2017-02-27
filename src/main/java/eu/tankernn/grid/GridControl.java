@@ -119,11 +119,7 @@ public class GridControl implements Runnable {
 		}
 		// Save misc. settings
 		try (Writer writer = new FileWriter(SETTINGS_PATH)) {
-			gson.toJson(new Settings(model.getGrid().getCommunicator().getPortName(),
-					model.getGrid().fanStream().map(f -> f.getProfile().getName()).toArray(String[]::new),
-					model.getSensor().getCpuSensors().stream().toArray(String[]::new),
-					model.getSensor().getGpuSensors().stream().toArray(String[]::new), pollingSpeed,
-					model.getMinSpeed(), this.startMinimized), writer);
+			gson.toJson(new Settings(model.getGrid().getCommunicator().getPortName(), model.getGrid().fanStream().map(f -> f.getProfile().getName()).toArray(String[]::new), model.getSensor().getCpuSensors().stream().toArray(String[]::new), model.getSensor().getGpuSensors().stream().toArray(String[]::new), pollingSpeed, model.getMinSpeed(), this.startMinimized), writer);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -132,25 +128,25 @@ public class GridControl implements Runnable {
 	@Override
 	public void run() {
 		while (!t.isInterrupted()) {
-			model.poll();
-			model.compute();
-
-			if (frame != null)
-				frame.updateProperties();
-
 			try {
+				model.poll();
+				model.compute();
+
+				if (frame != null)
+					frame.updateProperties();
 				Thread.sleep(pollingSpeed);
 			} catch (InterruptedException ex) {
 				System.out.println("Thread was interrupted.");
 				return;
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
 	/**
 	 * 
-	 * @param args
-	 *            the command line arguments
+	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
 		try {
@@ -175,9 +171,9 @@ public class GridControl implements Runnable {
 		frame.dispose();
 		if (systemTray != null)
 			systemTray.shutdown();
-		for (Thread t : Thread.getAllStackTraces().keySet())
-			if (t.isAlive())
-				System.out.println(t);
+//		for (Thread t : Thread.getAllStackTraces().keySet())
+//			if (t.isAlive())
+//				System.out.println(t);
 	}
 
 	public void setPollingSpeed(int value) {

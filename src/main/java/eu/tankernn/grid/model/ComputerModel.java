@@ -1,5 +1,6 @@
 package eu.tankernn.grid.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,7 +41,8 @@ public class ComputerModel {
 	 */
 	private int minSpeed = 30;
 
-	private List<FanSpeedProfile> defaultProfiles, customProfiles = new ArrayList<>();
+	private List<FanSpeedProfile> defaultProfiles,
+			customProfiles = new ArrayList<>();
 
 	/**
 	 * Populates the port map, generates the default speed profiles and
@@ -63,28 +65,21 @@ public class ComputerModel {
 	 * identifiers in the map with their name as key.
 	 */
 	public void scanPorts() {
-		portMap = Arrays.stream(SerialPort.getCommPorts())
-				.collect(Collectors.toMap(SerialPort::getSystemPortName, Function.identity()));
+		portMap = Arrays.stream(SerialPort.getCommPorts()).collect(Collectors.toMap(SerialPort::getSystemPortName, Function.identity()));
 	}
 
 	/**
 	 * Polls the GRID and the sensor.
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 */
-	public void poll() {
+	public void poll() throws IOException, InterruptedException {
 		grid.pollFans();
-
-		try {
-			sensor.poll();
-		} catch (Exception ex) {
-			System.out.println("Temperature polling failed");
-			ex.printStackTrace();
-		}
+		sensor.poll();
 	}
 
 	private List<FanSpeedProfile> generateProfiles() {
-		return IntStream.range(30 / 5, 100 / 5 + 1).map(i -> i * 5)
-				.mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i }))
-				.collect(Collectors.toCollection(ArrayList::new));
+		return IntStream.range(30 / 5, 100 / 5 + 1).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i })).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	/**
@@ -121,8 +116,7 @@ public class ComputerModel {
 	/**
 	 * Connects to the GRID on the port specified.
 	 *
-	 * @param selectedPort
-	 *            The COM port the GRID controller is located at
+	 * @param selectedPort The COM port the GRID controller is located at
 	 */
 	public void setGrid(String selectedPort) {
 		if (!portMap.containsKey(selectedPort)) {

@@ -24,7 +24,7 @@ public class Communicator {
 	public void connect(SerialPort selectedPort) {
 		if (selectedPort.equals(serialPort) && isConnected())
 			return; // Already connected
-		
+
 		disconnect();
 		try {
 			serialPort = selectedPort;
@@ -61,7 +61,14 @@ public class Communicator {
 	 * @return If the ping was successful (the device responded correctly)
 	 */
 	private boolean ping() {
-		byte[] buffer = writeData(new byte[] { (byte) 0xc0 });
+		byte[] buffer = null;
+		try {
+			buffer = writeData(new byte[] { (byte) 0xc0 });
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return buffer[0] == 0x21;
 	}
 
@@ -109,19 +116,14 @@ public class Communicator {
 	 * 
 	 * @param command an array of bytes as a command
 	 * @return The response data from the device
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 */
-	public byte[] writeData(byte[] command) {
-		try {
-			sleep(50);
-			output.write(command);
-			sleep(50);
-			return serialRead();
-		} catch (IOException e) {
-			System.out.println("Failed to write data. (" + e.toString() + ")");
-		} catch (InterruptedException e) {
-			// Just ignore
-		}
-		return new byte[32];
+	public byte[] writeData(byte[] command) throws IOException, InterruptedException {
+		sleep(50);
+		output.write(command);
+		sleep(50);
+		return serialRead();
 	}
 
 	public boolean isConnected() {

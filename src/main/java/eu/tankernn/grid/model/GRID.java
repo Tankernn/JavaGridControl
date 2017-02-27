@@ -1,5 +1,6 @@
 package eu.tankernn.grid.model;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -42,9 +43,10 @@ public class GRID {
 		return fanStream().mapToDouble(Fan::getWattage).sum();
 	}
 
-	public void pollFans() {
+	public void pollFans() throws IOException, InterruptedException {
 		if (communicator.isConnected())
-			fanStream().forEach(Fan::poll);
+			for (Fan f : fans)
+				f.poll();
 	}
 
 	public void updateFanSpeeds(double temp, int minSpeed) {
