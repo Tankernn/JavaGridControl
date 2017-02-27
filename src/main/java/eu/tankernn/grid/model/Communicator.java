@@ -22,6 +22,9 @@ public class Communicator {
 	 * @param selectedPort
 	 */
 	public void connect(SerialPort selectedPort) {
+		if (selectedPort.equals(serialPort) && isConnected())
+			return; // Already connected
+		
 		disconnect();
 		try {
 			serialPort = selectedPort;
