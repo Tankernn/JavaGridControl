@@ -35,6 +35,7 @@ public class GridControl implements Runnable {
 	private ComputerModel model = new ComputerModel();
 
 	private GridControlPanel frame;
+	private boolean startMinimized = false;
 
 	public GridControl(boolean gui) {
 		readSettings();
@@ -52,7 +53,7 @@ public class GridControl implements Runnable {
 			frame.setIconImage(image);
 			frame.pack();
 			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			frame.setVisible(true);
+			frame.setVisible(!startMinimized);
 			addTrayIcon(image);
 		}
 
@@ -98,6 +99,7 @@ public class GridControl implements Runnable {
 				model.getGrid().getFan(i).setProfile(model.getProfile(settings.fanProfiles[i]));
 			pollingSpeed = settings.pollingRate;
 			model.setMinSpeed(settings.minSpeed);
+			startMinimized = settings.startMinimized;
 		} catch (FileNotFoundException e) {
 			System.out.println("No config file found, using default settings.");
 			for (int i = 0; i < 6; i++)
@@ -119,7 +121,7 @@ public class GridControl implements Runnable {
 		try (Writer writer = new FileWriter(SETTINGS_PATH)) {
 			gson.toJson(new Settings(model.getGrid().getCommunicator().getPortName(),
 					model.getGrid().fanStream().map(f -> f.getProfile().name).toArray(String[]::new), pollingSpeed,
-					model.getMinSpeed()), writer);
+					model.getMinSpeed(), this.startMinimized), writer);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -180,6 +182,10 @@ public class GridControl implements Runnable {
 
 	public int getPollingSpeed() {
 		return pollingSpeed;
+	}
+	
+	public void setStartMinimized(boolean startMinimized) {
+		this.startMinimized = startMinimized;
 	}
 
 }

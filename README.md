@@ -22,5 +22,4 @@ A Java-based, open-source alternative to the default control software for the NZ
 ##TODO
 - Make it possible to set weights for different temperature readings.
 - Unit tests
-- GUI Improvements
-  - More menu items (start minimized, start on boot, etc.)
+- Start on boot for Windows and Linux

@@ -8,6 +8,7 @@ import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -38,7 +39,7 @@ public class GridControlPanel extends JFrame {
 	private JMenu fileMenu = new JMenu("File"), settingsMenu = new JMenu("Settings"),
 			profileMenu = new JMenu("Profiles");
 	private JMenuItem saveSettings = new JMenuItem("Save settings..."), exit = new JMenuItem("Exit"),
-			sensorConf = new JMenuItem("Configure sensors..."), addProfile = new JMenuItem("Add profile...");
+			sensorConf = new JMenuItem("Configure sensors..."), startMinimized = new JCheckBoxMenuItem("Start minimized"), addProfile = new JMenuItem("Add profile...");
 
 	private FanPanel[] fanPanels;
 	private JPanel serialPanel = new JPanel(), gridPanel = new JPanel(), infoPanel = new JPanel();
@@ -76,6 +77,8 @@ public class GridControlPanel extends JFrame {
 		menuBar.add(settingsMenu);
 		settingsMenu.add(sensorConf);
 		sensorConf.addActionListener(e -> new SensorConfig(model.getSensor()));
+		settingsMenu.add(startMinimized);
+		startMinimized.addActionListener(e -> control.setStartMinimized(startMinimized.isEnabled()));
 		menuBar.add(profileMenu);
 		profileMenu.add(addProfile);
 		addProfile.addActionListener(e -> {
