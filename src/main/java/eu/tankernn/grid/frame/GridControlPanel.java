@@ -139,16 +139,12 @@ public class GridControlPanel extends JFrame {
 			profileMenu.removeAll();
 			for (FanSpeedProfile p : model.getCustomProfiles()) {
 				JMenuItem item = new JMenuItem(p.getName());
-				item.addActionListener(a -> editProfile(p));
+				item.addActionListener(a -> new ProfileEditor().editProfile(p));
 				profileMenu.add(item);
 			}
 			profileMenu.add(new JSeparator());
 			profileMenu.add(addProfile);
 		}
-	}
-
-	private void editProfile(FanSpeedProfile p) {
-		p = new ProfileEditor().editProfile(p);
 	}
 
 	static JPanel labelledComponent(String labelText, JComponent component) {

@@ -31,14 +31,17 @@ public class GridControl implements Runnable {
 	private Thread t = new Thread(this, "Polling thread");
 
 	private int pollingSpeed = 500;
+	private boolean startMinimized = false;
 
 	private ComputerModel model = new ComputerModel();
 
 	private GridControlPanel frame;
-	private boolean startMinimized = false;
+	private SystemTray systemTray;
 
 	public GridControl(boolean gui) {
 		readSettings();
+
+		t.start();
 
 		if (gui) {
 			Image image;
@@ -56,28 +59,23 @@ public class GridControl implements Runnable {
 			frame.setVisible(!startMinimized);
 			addTrayIcon(image);
 		}
-
-		t.start();
 	}
 
 	private void addTrayIcon(Image image) {
-		SystemTray systemTray = SystemTray.get();
+		systemTray = SystemTray.get();
 		if (systemTray == null) {
 			throw new RuntimeException("Unable to load SystemTray!");
 		}
 
 		systemTray.setImage(image);
 
-		systemTray.setStatus("Not Running");
-
 		systemTray.getMenu().add(new MenuItem("Show", a -> {
 			frame.setVisible(true);
 		}));
-		
+
 		systemTray.getMenu().add(new JSeparator());
 
 		systemTray.getMenu().add(new MenuItem("Quit", a -> {
-			systemTray.shutdown();
 			exit();
 		})).setShortcut('q'); // case does not matter
 
@@ -99,6 +97,8 @@ public class GridControl implements Runnable {
 				model.getGrid().getFan(i).setProfile(model.getProfile(settings.fanProfiles[i]));
 			pollingSpeed = settings.pollingRate;
 			model.setMinSpeed(settings.minSpeed);
+			model.getSensor().setCpuSensors(Arrays.asList(settings.cpuSensors));
+			model.getSensor().setGpuSensors(Arrays.asList(settings.gpuSensors));
 			startMinimized = settings.startMinimized;
 		} catch (FileNotFoundException e) {
 			System.out.println("No config file found, using default settings.");
@@ -120,7 +120,9 @@ public class GridControl implements Runnable {
 		// Save misc. settings
 		try (Writer writer = new FileWriter(SETTINGS_PATH)) {
 			gson.toJson(new Settings(model.getGrid().getCommunicator().getPortName(),
-					model.getGrid().fanStream().map(f -> f.getProfile().getName()).toArray(String[]::new), pollingSpeed,
+					model.getGrid().fanStream().map(f -> f.getProfile().getName()).toArray(String[]::new),
+					model.getSensor().getCpuSensors().stream().toArray(String[]::new),
+					model.getSensor().getGpuSensors().stream().toArray(String[]::new), pollingSpeed,
 					model.getMinSpeed(), this.startMinimized), writer);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -171,6 +173,8 @@ public class GridControl implements Runnable {
 		model.getGrid().disconnect();
 		saveSettings();
 		frame.dispose();
+		if (systemTray != null)
+			systemTray.shutdown();
 		for (Thread t : Thread.getAllStackTraces().keySet())
 			if (t.isAlive())
 				System.out.println(t);
@@ -183,7 +187,7 @@ public class GridControl implements Runnable {
 	public int getPollingSpeed() {
 		return pollingSpeed;
 	}
-	
+
 	public void setStartMinimized(boolean startMinimized) {
 		this.startMinimized = startMinimized;
 	}

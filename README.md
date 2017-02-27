@@ -9,6 +9,7 @@ A Java-based, open-source alternative to the default control software for the NZ
 3. Run the jar-file. (append 'nogui' to command line for headless mode)
   * Currently, configuration is only possible through the GUI, though your settings will persist even if you run in headless mode after configuring.
 4. Select appropriate COM-port using the combo box at the top.
+5. Use Settings -> Configure sensors... to select which sensors to read CPU and GPU temperatures from.
 5. When the window is closed, the program will keep running in the background. Use the system tray icon to exit completely.
 
 ## Credit
