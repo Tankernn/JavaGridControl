@@ -120,7 +120,7 @@ public class GridControl implements Runnable {
 		// Save misc. settings
 		try (Writer writer = new FileWriter(SETTINGS_PATH)) {
 			gson.toJson(new Settings(model.getGrid().getCommunicator().getPortName(),
-					model.getGrid().fanStream().map(f -> f.getProfile().name).toArray(String[]::new), pollingSpeed,
+					model.getGrid().fanStream().map(f -> f.getProfile().getName()).toArray(String[]::new), pollingSpeed,
 					model.getMinSpeed(), this.startMinimized), writer);
 		} catch (IOException e) {
 			e.printStackTrace();

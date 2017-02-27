@@ -170,6 +170,6 @@ public class ComputerModel {
 	}
 
 	public FanSpeedProfile getProfile(String string) {
-		return getProfiles().stream().filter(p -> p.name.equals(string)).findFirst().get();
+		return getProfiles().stream().filter(p -> p.getName().equals(string)).findFirst().get();
 	}
 }

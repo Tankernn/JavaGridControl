@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
@@ -17,7 +18,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JSpinner;
+import javax.swing.KeyStroke;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -38,8 +41,9 @@ public class GridControlPanel extends JFrame {
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu fileMenu = new JMenu("File"), settingsMenu = new JMenu("Settings"),
 			profileMenu = new JMenu("Profiles");
-	private JMenuItem saveSettings = new JMenuItem("Save settings..."), exit = new JMenuItem("Exit"),
-			sensorConf = new JMenuItem("Configure sensors..."), startMinimized = new JCheckBoxMenuItem("Start minimized"), addProfile = new JMenuItem("Add profile...");
+	private JMenuItem saveSettings = new JMenuItem("Save settings", KeyEvent.VK_S),
+			exit = new JMenuItem("Exit", KeyEvent.VK_E), sensorConf = new JMenuItem("Configure sensors..."),
+			startMinimized = new JCheckBoxMenuItem("Start minimized"), addProfile = new JMenuItem("Add profile...");
 
 	private FanPanel[] fanPanels;
 	private JPanel serialPanel = new JPanel(), gridPanel = new JPanel(), infoPanel = new JPanel();
@@ -74,6 +78,7 @@ public class GridControlPanel extends JFrame {
 		exit.addActionListener(a -> control.exit());
 		fileMenu.add(saveSettings);
 		saveSettings.addActionListener(e -> control.saveSettings());
+		saveSettings.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
 		menuBar.add(settingsMenu);
 		settingsMenu.add(sensorConf);
 		sensorConf.addActionListener(e -> new SensorConfig(model.getSensor()));
@@ -81,13 +86,7 @@ public class GridControlPanel extends JFrame {
 		startMinimized.addActionListener(e -> control.setStartMinimized(startMinimized.isEnabled()));
 		menuBar.add(profileMenu);
 		profileMenu.add(addProfile);
-		addProfile.addActionListener(e -> {
-			FanSpeedProfile p = new ProfileEditor().editProfile(null);
-			if (p != null) {
-				model.addProfile(p);
-				Arrays.stream(fanPanels).forEach(f -> f.addProfile(p));
-			}
-		});
+		addProfile.addActionListener(e -> addProfile());
 
 		this.setJMenuBar(this.menuBar);
 
@@ -130,6 +129,26 @@ public class GridControlPanel extends JFrame {
 		});
 
 		this.setTitle("JavaGridControl");
+	}
+
+	private void addProfile() {
+		FanSpeedProfile profile = new ProfileEditor().editProfile(null);
+		if (profile != null) {
+			model.addProfile(profile);
+			Arrays.stream(fanPanels).forEach(f -> f.addProfile(profile));
+			profileMenu.removeAll();
+			for (FanSpeedProfile p : model.getCustomProfiles()) {
+				JMenuItem item = new JMenuItem(p.getName());
+				item.addActionListener(a -> editProfile(p));
+				profileMenu.add(item);
+			}
+			profileMenu.add(new JSeparator());
+			profileMenu.add(addProfile);
+		}
+	}
+
+	private void editProfile(FanSpeedProfile p) {
+		p = new ProfileEditor().editProfile(p);
 	}
 
 	static JPanel labelledComponent(String labelText, JComponent component) {

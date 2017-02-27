@@ -30,8 +30,8 @@ public class ProfileEditor {
 		JSlider[] sliders;
 		JTextField nameField = new JTextField(20);
 		if (profile != null) {
-			nameField.setText(profile.name);
-			sliders = Arrays.stream(profile.percentages).mapToObj(i -> new JSlider(JSlider.VERTICAL, 0, 100, i))
+			nameField.setText(profile.getName());
+			sliders = Arrays.stream(profile.getPercentages()).mapToObj(i -> new JSlider(JSlider.VERTICAL, 0, 100, i))
 					.toArray(JSlider[]::new);
 		} else {
 			sliders = IntStream.range(0, FanSpeedProfile.STEPS).mapToObj(i -> new JSlider(JSlider.VERTICAL, 0, 100, 50))
@@ -65,13 +65,18 @@ public class ProfileEditor {
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
 		if (response == JOptionPane.OK_OPTION) {
-			FanSpeedProfile newProfile = new FanSpeedProfile(nameField.getText(),
-					Arrays.stream(sliders).mapToInt(JSlider::getValue).toArray());
+			int[] percs = Arrays.stream(sliders).mapToInt(JSlider::getValue).toArray();
+			if (profile == null)
+				profile = new FanSpeedProfile(nameField.getText(), percs);
+			else {
+				profile.setPercentages(percs);
+				profile.setName(nameField.getText());
+			}
 			if (nameField.getText().isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Please enter a name for the profile.");
-				return editProfile(newProfile);
+				return editProfile(profile);
 			}
-			return newProfile;
+			return profile;
 		} else {
 			return profile;
 		}
