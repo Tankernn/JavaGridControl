@@ -9,7 +9,20 @@ import java.util.regex.Pattern;
 public class LMSensor extends Sensor {
 
 	public static final String REGEX = "(.*):\\s*([\\+\\-][\\d\\.]*).C";
-
+	
+	public LMSensor() {
+		try {
+			Process proc = Runtime.getRuntime().exec("sensors -A");
+			proc.waitFor();
+			if (proc.exitValue() != 0)
+				System.err.println("Error polling LMSensor, make sure that 'lm-sensors' is installed on the system.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void poll() throws IOException {
 		Process proc = Runtime.getRuntime().exec("sensors -A");
