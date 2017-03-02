@@ -18,7 +18,6 @@ public class FanSpeedProfile {
 
 	public int getSpeedPercentage(double cpuTemp, double gpuTemp) {
 		double temp = (cpuTemp * cpuWeightPercent + gpuTemp * gpuWeightPercent) / 100;
-		System.out.println(temp);
 		double currentTemp = MIN_TEMP;
 
 		for (int i : getPercentages()) {

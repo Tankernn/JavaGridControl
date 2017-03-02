@@ -59,17 +59,15 @@ public class Communicator {
 	 * Sends test data to the device to check availability.
 	 * 
 	 * @return If the ping was successful (the device responded correctly)
+	 * @throws InterruptedException
+	 * @throws IOException
 	 */
-	private boolean ping() {
-		byte[] buffer = null;
+	private boolean ping() throws IOException, InterruptedException {
 		try {
-			buffer = writeData(new byte[] { (byte) 0xc0 });
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			return writeData(new byte[] { (byte) 0xc0 })[0] == 0x21;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return false;
 		}
-		return buffer[0] == 0x21;
 	}
 
 	/**
@@ -97,13 +95,9 @@ public class Communicator {
 	 */
 	private byte[] serialRead() {
 		try {
-			if (input.available() > 0) {
-				byte[] buffer = new byte[input.available()];
-				input.read(buffer);
-				return buffer;
-			} else {
-				System.err.println("Failed to read data. No data to read");
-			}
+			byte[] buffer = new byte[input.available()];
+			input.read(buffer);
+			return buffer.length > 0 ? buffer : new byte[32];
 		} catch (IOException e) {
 			System.err.println("Failed to read data. (" + e.toString() + ")");
 		}
@@ -114,10 +108,11 @@ public class Communicator {
 	 * This method sends a byte array command over the serial communication
 	 * afterwards the method calls the read method
 	 * 
-	 * @param command an array of bytes as a command
+	 * @param command
+	 *            an array of bytes as a command
 	 * @return The response data from the device
-	 * @throws IOException 
-	 * @throws InterruptedException 
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
 	public byte[] writeData(byte[] command) throws IOException, InterruptedException {
 		sleep(50);
