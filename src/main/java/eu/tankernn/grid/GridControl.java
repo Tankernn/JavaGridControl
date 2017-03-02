@@ -22,6 +22,7 @@ import dorkbox.systemTray.MenuItem;
 import dorkbox.systemTray.SystemTray;
 import eu.tankernn.grid.frame.GridControlPanel;
 import eu.tankernn.grid.model.ComputerModel;
+import eu.tankernn.grid.model.FanSpeedProfile;
 
 public class GridControl implements Runnable {
 

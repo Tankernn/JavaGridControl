@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 
-import eu.tankernn.grid.FanSpeedProfile;
+import eu.tankernn.grid.model.FanSpeedProfile;
 
 public class ProfileEditor {
 	

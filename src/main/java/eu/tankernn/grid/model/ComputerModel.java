@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 
 import com.fazecast.jSerialComm.SerialPort;
 
-import eu.tankernn.grid.FanSpeedProfile;
 import eu.tankernn.grid.model.sensor.Sensor;
 import eu.tankernn.grid.model.sensor.SensorFactory;
 

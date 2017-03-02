@@ -1,4 +1,4 @@
-package eu.tankernn.grid;
+package eu.tankernn.grid.model;
 
 import java.util.Arrays;
 

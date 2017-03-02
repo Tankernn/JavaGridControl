@@ -10,8 +10,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import eu.tankernn.grid.Fan;
-import eu.tankernn.grid.FanSpeedProfile;
+import eu.tankernn.grid.model.Fan;
+import eu.tankernn.grid.model.FanSpeedProfile;
 
 public class FanPanel extends JPanel {
 

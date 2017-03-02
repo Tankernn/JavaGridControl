@@ -25,9 +25,9 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 
-import eu.tankernn.grid.FanSpeedProfile;
 import eu.tankernn.grid.GridControl;
 import eu.tankernn.grid.model.ComputerModel;
+import eu.tankernn.grid.model.FanSpeedProfile;
 
 public class GridControlPanel extends JFrame {
 

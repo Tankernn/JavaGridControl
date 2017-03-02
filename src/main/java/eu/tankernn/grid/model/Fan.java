@@ -1,9 +1,7 @@
-package eu.tankernn.grid;
+package eu.tankernn.grid.model;
 
 import java.io.IOException;
 import java.util.function.BiFunction;
-
-import eu.tankernn.grid.model.Communicator;
 
 public class Fan {
 	private double voltage, current;

@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import eu.tankernn.grid.Fan;
-
 /**
  * This class uses the communicator class to communicate with the GRID+
  * controller.
