@@ -20,7 +20,6 @@ A Java-based, open-source alternative to the default control software for the NZ
 - On windows systems, this class communicates with an external program called openhardwaremonitor @ http://openhardwaremonitor.org/
 - This project uses [SystemTray](https://github.com/dorkbox/SystemTray).
 
-##TODO
-- Make it possible to set weights for different temperature readings.
+## TODO
 - Unit tests
 - Start on boot for Windows and Linux

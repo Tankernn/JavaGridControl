@@ -97,7 +97,8 @@ public class GridControlPanel extends JFrame {
 		this.add(serialPanel, BorderLayout.NORTH);
 
 		fanPanels = model.getGrid().fanStream().map(f -> new FanPanel(f, model.getProfiles())).toArray(FanPanel[]::new);
-
+		updateProfileMenu();
+		
 		gridPanel.setLayout(new GridLayout(3, 2));
 		for (FanPanel p : fanPanels)
 			gridPanel.add(p);
@@ -136,15 +137,19 @@ public class GridControlPanel extends JFrame {
 		if (profile != null) {
 			model.addProfile(profile);
 			Arrays.stream(fanPanels).forEach(f -> f.addProfile(profile));
-			profileMenu.removeAll();
-			for (FanSpeedProfile p : model.getCustomProfiles()) {
-				JMenuItem item = new JMenuItem(p.getName());
-				item.addActionListener(a -> new ProfileEditor().editProfile(p));
-				profileMenu.add(item);
-			}
-			profileMenu.add(new JSeparator());
-			profileMenu.add(addProfile);
+			updateProfileMenu();
 		}
+	}
+	
+	private void updateProfileMenu() {
+		profileMenu.removeAll();
+		for (FanSpeedProfile p : model.getCustomProfiles()) {
+			JMenuItem item = new JMenuItem(p.getName());
+			item.addActionListener(a -> new ProfileEditor().editProfile(p));
+			profileMenu.add(item);
+		}
+		profileMenu.add(new JSeparator());
+		profileMenu.add(addProfile);
 	}
 
 	static JPanel labelledComponent(String labelText, JComponent component) {

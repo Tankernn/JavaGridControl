@@ -8,13 +8,17 @@ public class FanSpeedProfile {
 
 	private String name;
 	private int[] percentages;
+	private int cpuWeightPercent, gpuWeightPercent;
 
-	public FanSpeedProfile(String name, int[] percentages) {
+	public FanSpeedProfile(String name, int[] percentages, int cpuWeight) {
 		this.setName(name);
 		this.setPercentages(percentages);
+		this.setCpuWeight(cpuWeight);
 	}
 
-	public int getSpeedPercentage(double temp) {
+	public int getSpeedPercentage(double cpuTemp, double gpuTemp) {
+		double temp = (cpuTemp * cpuWeightPercent + gpuTemp * gpuWeightPercent) / 100;
+		System.out.println(temp);
 		double currentTemp = MIN_TEMP;
 
 		for (int i : getPercentages()) {
@@ -46,5 +50,14 @@ public class FanSpeedProfile {
 
 	public void setPercentages(int[] percentages) {
 		this.percentages = percentages;
+	}
+
+	public int getCpuWeight() {
+		return cpuWeightPercent;
+	}
+
+	public void setCpuWeight(int cpuWeight) {
+		this.cpuWeightPercent = cpuWeight;
+		this.gpuWeightPercent = 100 - cpuWeight;
 	}
 }

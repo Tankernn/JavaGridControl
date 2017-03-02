@@ -49,8 +49,8 @@ public class GRID {
 				f.poll();
 	}
 
-	public void updateFanSpeeds(double temp, int minSpeed) {
-		fanStream().forEach(f -> f.update(temp, minSpeed));
+	public void updateFanSpeeds(double cpuTemp, double gpuTemp, int minSpeed) {
+		fanStream().forEach(f -> f.update(cpuTemp, gpuTemp, minSpeed));
 	}
 
 	public Stream<Fan> fanStream() {

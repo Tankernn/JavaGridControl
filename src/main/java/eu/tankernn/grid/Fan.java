@@ -25,8 +25,8 @@ public class Fan {
 		this.speed = (int) (100 * voltage / 12);
 	}
 
-	public void update(double temp, int minSpeed) {
-		int calcSpeed = profile.getSpeedPercentage(temp);
+	public void update(double cpuTemp, double gpuTemp, int minSpeed) {
+		int calcSpeed = profile.getSpeedPercentage(cpuTemp, gpuTemp);
 		try {
 			setFanSpeed(calcSpeed < minSpeed ? 0 : calcSpeed);
 		} catch (IOException | InterruptedException e) {

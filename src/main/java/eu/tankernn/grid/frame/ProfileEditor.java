@@ -26,13 +26,15 @@ public class ProfileEditor {
 	}
 
 	public FanSpeedProfile editProfile(FanSpeedProfile profile) {
-		JPanel panel = new JPanel(), sliderPanel = new JPanel();
+		JPanel panel = new JPanel(), sliderPanel = new JPanel(), weightPanel = new JPanel();
 		JSlider[] sliders;
+		JSlider weightSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
 		JTextField nameField = new JTextField(20);
 		if (profile != null) {
 			nameField.setText(profile.getName());
 			sliders = Arrays.stream(profile.getPercentages()).mapToObj(i -> new JSlider(JSlider.VERTICAL, 0, 100, i))
 					.toArray(JSlider[]::new);
+			weightSlider.setValue(profile.getCpuWeight());
 		} else {
 			sliders = IntStream.range(0, FanSpeedProfile.STEPS).mapToObj(i -> new JSlider(JSlider.VERTICAL, 0, 100, 50))
 					.toArray(JSlider[]::new);
@@ -60,6 +62,14 @@ public class ProfileEditor {
 		panel.add(GridControlPanel.labelledComponent("Profile name: ", nameField), BorderLayout.NORTH);
 
 		panel.add(sliderPanel, BorderLayout.CENTER);
+		
+		weightPanel.add(new JLabel("GPU"));
+		weightSlider.setMajorTickSpacing(50);
+		weightSlider.setMinorTickSpacing(10);
+		weightSlider.setPaintTicks(true);
+		weightPanel.add(weightSlider);
+		weightPanel.add(new JLabel("CPU"));
+		panel.add(weightPanel, BorderLayout.SOUTH);
 
 		int response = JOptionPane.showConfirmDialog(null, panel, "Fan Speed Profile Editor",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -67,10 +77,11 @@ public class ProfileEditor {
 		if (response == JOptionPane.OK_OPTION) {
 			int[] percs = Arrays.stream(sliders).mapToInt(JSlider::getValue).toArray();
 			if (profile == null)
-				profile = new FanSpeedProfile(nameField.getText(), percs);
+				profile = new FanSpeedProfile(nameField.getText(), percs, weightSlider.getValue());
 			else {
 				profile.setPercentages(percs);
 				profile.setName(nameField.getText());
+				profile.setCpuWeight(weightSlider.getValue());
 			}
 			if (nameField.getText().isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Please enter a name for the profile.");

@@ -79,7 +79,7 @@ public class ComputerModel {
 	}
 
 	private List<FanSpeedProfile> generateProfiles() {
-		return IntStream.range(30 / 5, 100 / 5 + 1).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i })).collect(Collectors.toCollection(ArrayList::new));
+		return IntStream.range(30 / 5, 100 / 5 + 1).map(i -> i * 5).mapToObj(i -> new FanSpeedProfile(i + "%", new int[] { i }, 50)).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class ComputerModel {
 	 *
 	 */
 	public void compute() {
-		grid.updateFanSpeeds(getTemp(), minSpeed);
+		grid.updateFanSpeeds(sensor.getCPUTemp(), sensor.getGPUTemp(), minSpeed);
 	}
 
 	/**
@@ -136,15 +136,6 @@ public class ComputerModel {
 
 	public Map<String, SerialPort> getPortMap() {
 		return portMap;
-	}
-
-	/**
-	 * 
-	 * @return The temperature used to calculate fan speeds.
-	 */
-	public double getTemp() {
-		// TODO Make configurable
-		return (sensor.getCPUTemp() + sensor.getGPUTemp()) / 2;
 	}
 
 	public List<FanSpeedProfile> getProfiles() {
